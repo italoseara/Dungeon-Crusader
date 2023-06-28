@@ -1,11 +1,11 @@
 local Class = require 'libs.classic'
-local Menu = require 'assets.scripts.menu'
+local Menu = require 'assets.scripts.states.menu'
 
 local StartScreen = Class:extend()
 
 local State = {
     START = 1,
-    FADE_OUT = 2
+    TRANSITION = 2
 }
 
 function StartScreen:new()
@@ -13,8 +13,8 @@ function StartScreen:new()
     self.timer = love.timer.getTime()
     self.logo  = love.graphics.newImage('assets/images/logo.png')
     self.delay = {
-        start    = 3,
-        fade_out = 1
+        start      = 3,
+        transition = 1
     }
 
     local font = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 16)
@@ -26,11 +26,11 @@ end
 function StartScreen:update(dt)
     if self.state == State.START then
         if love.timer.getTime() - self.timer > self.delay.start then
-            self.state = State.FADE_OUT
+            self.state = State.TRANSITION
             self.timer = love.timer.getTime()
         end
-    elseif self.state == State.FADE_OUT then
-        if love.timer.getTime() - self.timer > self.delay.fade_out then
+    elseif self.state == State.TRANSITION then
+        if love.timer.getTime() - self.timer > self.delay.transition then
             GameState = Menu()
         end
     end
@@ -47,9 +47,9 @@ function StartScreen:draw()
         love.graphics.getWidth() - self.text:getWidth() - 10,
         love.graphics.getHeight() - self.text:getHeight() - 10)
 
-    if self.state == State.FADE_OUT then
+    if self.state == State.TRANSITION then
         -- Fade out the logo
-        love.graphics.setColor(0, 0, 0, (love.timer.getTime() - self.timer) / self.delay.fade_out)
+        love.graphics.setColor(0, 0, 0, (love.timer.getTime() - self.timer) / self.delay.transition)
         love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     end
 
