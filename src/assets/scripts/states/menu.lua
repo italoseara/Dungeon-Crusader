@@ -23,6 +23,8 @@ function Menu:new()
 
     self.buttons = {
         TextButton(self.fonts.button, 'Adventure', btnOffset.x, btnOffset.y, nil, 40, 0, 10, function()
+            if self.state == State.TRANSITION then return end
+
             self.state = State.TRANSITION
             self.timer = love.timer.getTime()
         end),

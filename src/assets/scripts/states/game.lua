@@ -8,11 +8,11 @@ local Game = Class:extend()
 
 function Game:new()
     -- Camera
-    self.camera = Camera(0, 0, 3)
+    self.camera = Camera(0, 0, 4)
     self.camera.smoother = Camera.smooth.damped(10)
-    self.camera:move((256 * 16) + 8, (256 * 16) + 8)
 
     self.level = Level()
+    self.camera:lookAt(self.level.spawn.x, self.level.spawn.y)
 end
 
 function Game:update(dt)
@@ -29,7 +29,8 @@ function Game:draw()
 
     self.camera:detach()
 
-    -- self.player:drawUI()
+    self.level:drawUI()
+    love.graphics.print('Camera Position: ' .. self.camera.x .. ', ' .. self.camera.y, 10, 10)
 end
 
 return Game
