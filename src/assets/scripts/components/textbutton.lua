@@ -5,12 +5,18 @@ local TextButton = Class:extend()
 
 function TextButton:new(font, text, x, y, w, h, ox, oy, callback)
     self.text = love.graphics.newText(font, text)
+    self.color = { 1, 1, 1, 1 }
+
+    self.original_pos = Vector(x, y)
     self.position = Vector(x, y)
+    
     self.dimentions = Vector(w or self.text:getWidth(), h or self.text:getHeight())
     self.origin = Vector(ox or 0, oy or 0)
+    
     self.hovering = false
-    self.callback = callback
     self.last_click = 0
+    
+    self.callback = callback
 end
 
 function TextButton:update(dt)
@@ -28,20 +34,29 @@ function TextButton:update(dt)
             end
         end
 
-        self.hovering = true
+        self:changeColor(1, 0, 0, 1, dt)
+        self:changePosition(self.original_pos.x + 10, self.original_pos.y, dt)
     else
-        self.hovering = false
+        self:changeColor(1, 1, 1, 1, dt)
+        self:changePosition(self.original_pos.x, self.original_pos.y, dt)
     end
+end
+
+function TextButton:changeColor(r, g, b, a, dt)
+    self.color[1] = Lerp(self.color[1], r, dt * 10)
+    self.color[2] = Lerp(self.color[2], g, dt * 10)
+    self.color[3] = Lerp(self.color[3], b, dt * 10)
+    self.color[4] = Lerp(self.color[4], a, dt * 10)
+end
+
+function TextButton:changePosition(x, y, dt)
+    self.position.x = Lerp(self.position.x, x, dt * 10)
+    self.position.y = Lerp(self.position.y, y, dt * 10)
 end
 
 function TextButton:draw()
     -- Draw the text
-    love.graphics.setColor(1, 1, 1, 1)
-
-    if self.hovering then
-        love.graphics.setColor(1, 0, 0, 1)
-    end
-
+    love.graphics.setColor(self.color)
     love.graphics.draw(self.text, self.position.x, self.position.y)
     love.graphics.setColor(1, 1, 1, 1)
 
