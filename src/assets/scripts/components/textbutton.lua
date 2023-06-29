@@ -9,13 +9,13 @@ function TextButton:new(font, text, x, y, w, h, ox, oy, callback)
 
     self.original_pos = Vector(x, y)
     self.position = Vector(x, y)
-    
+
     self.dimentions = Vector(w or self.text:getWidth(), h or self.text:getHeight())
     self.origin = Vector(ox or 0, oy or 0)
-    
+
     self.hovering = false
     self.last_click = 0
-    
+
     self.callback = callback
 end
 
@@ -43,15 +43,15 @@ function TextButton:update(dt)
 end
 
 function TextButton:changeColor(r, g, b, a, dt)
-    self.color[1] = Lerp(self.color[1], r, dt * 10)
-    self.color[2] = Lerp(self.color[2], g, dt * 10)
-    self.color[3] = Lerp(self.color[3], b, dt * 10)
-    self.color[4] = Lerp(self.color[4], a, dt * 10)
+    self.color[1] = math.lerp(self.color[1], r, dt * 10)
+    self.color[2] = math.lerp(self.color[2], g, dt * 10)
+    self.color[3] = math.lerp(self.color[3], b, dt * 10)
+    self.color[4] = math.lerp(self.color[4], a, dt * 10)
 end
 
 function TextButton:changePosition(x, y, dt)
-    self.position.x = Lerp(self.position.x, x, dt * 10)
-    self.position.y = Lerp(self.position.y, y, dt * 10)
+    self.position.x = math.lerp(self.position.x, x, dt * 10)
+    self.position.y = math.lerp(self.position.y, y, dt * 10)
 end
 
 function TextButton:draw()

@@ -47,8 +47,8 @@ function Menu:update(dt)
     local direction = Mouse - center
 
     -- Smooth the movement
-    self.offset.x = Lerp(self.offset.x, direction.x / 10, dt * 10)
-    self.offset.y = Lerp(self.offset.y, direction.y / 10, dt * 10)
+    self.offset.x = math.lerp(self.offset.x, direction.x / 10, dt * 10)
+    self.offset.y = math.lerp(self.offset.y, direction.y / 10, dt * 10)
 
     -- Update the buttons
     for _, button in ipairs(self.buttons) do

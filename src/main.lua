@@ -8,7 +8,7 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    GameState = StartScreen()
+    GameState = Game()
 end
 
 function love.update(dt)
@@ -20,6 +20,6 @@ function love.draw()
     GameState:draw()
 end
 
-function Lerp(a, b, t)
+function math.lerp(a, b, t)
     return a + (b - a) * t
 end
