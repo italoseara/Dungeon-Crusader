@@ -18,9 +18,8 @@ function Player:new(x, y, world)
     self.height = 16
 
     self.collider = self.world:newBSGRectangleCollider(
-        self.position.x, self.position.y,
+        self.position.x - self.width / 2, self.position.y - self.height / 2,
         self.width, self.height, 2)
-
     self.collider:setCollisionClass('Player')
     self.collider:setFixedRotation(true)
 

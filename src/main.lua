@@ -8,7 +8,7 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    GameState = Game()
+    GameState = StartScreen()
 end
 
 function love.update(dt)
