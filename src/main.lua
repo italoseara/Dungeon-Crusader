@@ -1,6 +1,6 @@
 local Vector = require 'libs.vector'
 
-local StartScreen = require 'src.assets.scripts.states.Start'
+local StartScreen = require 'assets.scripts.states.Start'
 local Menu = require 'assets.scripts.states.Menu'
 local Game = require 'assets.scripts.states.Game'
 
