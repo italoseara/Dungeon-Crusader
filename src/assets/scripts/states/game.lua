@@ -18,8 +18,9 @@ function Game:new()
     self.world:addCollisionClass('Wall')
 
     self.level = Level(self.world)
-    self.player = Player(self.level.spawn.x, self.level.spawn.y, self.world)
 
+    -- Player
+    self.player = Player(self.level.spawn.x, self.level.spawn.y, self.world)
     self.camera:lookAt(self.player.position.x, self.player.position.y)
 end
 
@@ -37,12 +38,15 @@ end
 
 function Game:draw()
     self.camera:attach()
+
     self.level:draw()
     self.player:draw()
     self.world:draw()
+
     self.camera:detach()
 
     self.level:drawUI()
+
     love.graphics.print('Camera Position: ' .. self.camera.x .. ', ' .. self.camera.y, 10, 10)
 end
 

@@ -21,6 +21,7 @@ function Level:new(world)
 
     -- Create walls
     self.world = world
+
     self.walls = {}
     if self.map.layers['Collide'] then
         for _, obj in pairs(self.map.layers['Collide'].objects) do
@@ -39,6 +40,7 @@ function Level:new(world)
     self.images = {
         fountain_blue = love.graphics.newImage('assets/images/animation/fountain_blue.png'),
         fountain_red  = love.graphics.newImage('assets/images/animation/fountain_red.png'),
+        door          = love.graphics.newImage('assets/images/animation/door_open.png')
     }
 
     self.animations = {
@@ -52,6 +54,19 @@ end
 function Level:update(dt)
     self.map:update(dt)
     self.animations.fountain:update(dt)
+end
+
+function Level:drawDoors()
+    for _, obj in pairs(self.map.layers['Interact'].objects) do
+        if obj.name == 'door' then
+            local x, y = obj.x, obj.y - 12
+            local image = self.images['door']
+
+            if image then
+                love.graphics.draw(image, x, y)
+            end
+        end
+    end
 end
 
 function Level:drawAnimations()
@@ -71,6 +86,7 @@ function Level:draw()
     self.map:drawLayer(self.map.layers['Decoration'])
 
     self:drawAnimations()
+    self:drawDoors()
 end
 
 function Level:drawFog()
