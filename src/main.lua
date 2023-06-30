@@ -5,32 +5,53 @@ local Menu = require 'assets.scripts.states.menu'
 local Game = require 'assets.scripts.states.game'
 
 local cursor, last_click
+local cursor_scale = 2
+
+local function updateCursor(state, clicked)
+    if CursorState == state and last_click == clicked then return end
+
+    CursorState = state
+    last_click  = clicked
+end
+
+local function drawCursor()
+    local current = cursor[CursorState]
+    if love.mouse.isDown(1) then current = cursor[CursorState .. '_click'] end
+
+    love.graphics.draw(current.image,
+        Mouse.x - (current.ox or 0) * cursor_scale,
+        Mouse.y - (current.oy or 0) * cursor_scale,
+        0, cursor_scale, cursor_scale)
+end
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
+    love.mouse.setVisible(false)
     math.randomseed(os.time())
 
-    cursor               = {}
-    cursor.default       = love.mouse.newCursor('assets/images/ui/cursor/hover.png', 0, 0)
-    cursor.default_click = love.mouse.newCursor('assets/images/ui/cursor/hover_click.png', 0, 0)
-    cursor.combat        = love.mouse.newCursor('assets/images/ui/cursor/combat.png', 0, 0)
-    cursor.combat_click  = love.mouse.newCursor('assets/images/ui/cursor/combat_click.png', 0, 0)
+    cursor      = {
+        default       = { image = love.graphics.newImage('assets/images/ui/cursor/default.png'), ox = 8, oy = 8 },
+        default_click = { image = love.graphics.newImage('assets/images/ui/cursor/default_click.png'), ox = 8, oy = 8 },
+        pointer       = { image = love.graphics.newImage('assets/images/ui/cursor/pointer.png') },
+        pointer_click = { image = love.graphics.newImage('assets/images/ui/cursor/pointer_click.png') },
+        combat        = { image = love.graphics.newImage('assets/images/ui/cursor/combat.png') },
+        combat_click  = { image = love.graphics.newImage('assets/images/ui/cursor/combat_click.png') }
+    }
 
-    GameState            = Game()
-    CursorState          = 'default'
-
-    love.mouse.update(CursorState)
+    GameState   = StartScreen()
+    CursorState = 'default'
 end
 
 function love.update(dt)
     GameState:update(dt)
     Mouse = Vector(love.mouse.getX(), love.mouse.getY())
 
-    love.mouse.update(CursorState, love.mouse.isDown(1))
+    updateCursor(CursorState, love.mouse.isDown(1))
 end
 
 function love.draw()
     GameState:draw()
+    drawCursor()
 end
 
 function love.keypressed(k)
@@ -41,23 +62,11 @@ function love.mousepressed(x, y, b)
     if GameState.mousepressed then GameState:mousepressed(x, y, b) end
 end
 
-function love.mouse.update(state, clicked)
-    if CursorState == state and last_click == clicked then return end
-
-    CursorState = state
-    last_click  = clicked
-
-    if clicked then
-        love.mouse.setCursor(cursor[CursorState .. "_click"])
-    else
-        love.mouse.setCursor(cursor[CursorState])
-    end
-end
-
 function math.lerp(a, b, t)
     return a + (b - a) * t
 end
 
+-- Debug function to dump a table
 function dump(o)
     if type(o) == 'table' then
         local s = '\n'
