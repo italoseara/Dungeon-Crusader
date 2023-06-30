@@ -1,6 +1,6 @@
 local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
-local TextButton = require 'assets.scripts.components.textbutton'
+local TextButton = require 'assets.scripts.components.text_button'
 local Game = require 'assets.scripts.states.game'
 
 local Menu = Class:extend()
