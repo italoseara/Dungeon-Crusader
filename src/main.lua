@@ -1,8 +1,8 @@
 local Vector = require 'libs.vector'
 
-local StartScreen = require 'assets.scripts.states.start'
-local Menu = require 'assets.scripts.states.menu'
-local Game = require 'assets.scripts.states.game'
+local StartScreen = require 'src.assets.scripts.states.Start'
+local Menu = require 'assets.scripts.states.Menu'
+local Game = require 'assets.scripts.states.Game'
 
 local cursor, last_click
 local cursor_scale = 2

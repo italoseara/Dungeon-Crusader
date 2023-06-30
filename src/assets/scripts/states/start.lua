@@ -1,5 +1,5 @@
 local Class = require 'libs.classic'
-local Menu = require 'assets.scripts.states.menu'
+local Menu = require 'assets.scripts.states.Menu'
 
 local StartScreen = Class:extend()
 

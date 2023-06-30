@@ -2,8 +2,8 @@ local Class = require 'libs.classic'
 local Camera = require 'libs.camera'
 local WF = require 'libs.windfield'
 
-local Level = require 'assets.scripts.level'
-local Player = require 'assets.scripts.player'
+local Level = require 'assets.scripts.Level'
+local Player = require 'assets.scripts.Player'
 
 local Game = Class:extend()
 
