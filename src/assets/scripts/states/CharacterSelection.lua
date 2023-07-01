@@ -21,7 +21,7 @@ function CharacterSelection:new()
     self.selected = nil
     self.state = State.MENU
     self.timer = 0
-    self.delay = 2
+    self.delay = 1
 
     local center = Vector(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2 + 50)
     local margin = Vector(100, 100)

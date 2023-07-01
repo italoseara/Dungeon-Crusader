@@ -7,7 +7,7 @@ local Player = require 'assets.scripts.Player'
 
 local Game = Class:extend()
 
-function Game:new()
+function Game:new(characterID)
     -- Camera
     self.camera = Camera(0, 0, 4)
     self.camera.smoother = Camera.smooth.damped(10)
@@ -20,7 +20,7 @@ function Game:new()
     self.level = Level(self.world)
 
     -- Player
-    self.player = Player(self.level.spawn.x, self.level.spawn.y, self.world)
+    self.player = Player(self.level.spawn.x, self.level.spawn.y, self.world, self.camera, characterID)
     self.camera:lookAt(self.player.position.x, self.player.position.y)
 end
 
@@ -41,13 +41,12 @@ function Game:draw()
 
     self.level:draw()
     self.player:draw()
-    self.world:draw()
+    -- self.world:draw()
 
     self.camera:detach()
 
     self.level:drawUI()
-
-    love.graphics.print('Camera Position: ' .. self.camera.x .. ', ' .. self.camera.y, 10, 10)
+    self.player:drawUI()
 end
 
 return Game

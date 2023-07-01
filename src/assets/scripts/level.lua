@@ -47,7 +47,7 @@ function Level:new(world)
         fountain = Anim8.newAnimation(
             Anim8.newGrid(16, 32,
                 self.images.fountain_blue:getWidth(),
-                self.images.fountain_blue:getHeight())('1-2', 1), 0.1)
+                self.images.fountain_blue:getHeight())('1-2', 1), 0.15)
     }
 end
 
