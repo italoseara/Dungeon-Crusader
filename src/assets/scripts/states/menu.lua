@@ -1,7 +1,8 @@
 local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
-local TextButton = require 'assets.scripts.components.TextButton'
-local Game = require 'assets.scripts.states.Game'
+local TextButton = require 'assets.scripts.ui.TextButton'
+
+local CharacterSelection = require 'assets.scripts.states.CharacterSelection'
 
 local Menu = Class:extend()
 
@@ -38,13 +39,13 @@ function Menu:new()
 
     self.state = State.MENU
     self.timer = 0
-    self.delay = 2
+    self.delay = 0.5
 end
 
 function Menu:update(dt)
     -- Move the background around according to the mouse position
     local center = Vector(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-    local direction = Mouse - center
+    local direction = Vector(Mouse.x - center.x, Mouse.y - center.y)
 
     -- Smooth the movement
     self.offset.x = math.lerp(self.offset.x, direction.x / 10, dt * 10)
@@ -59,7 +60,7 @@ function Menu:update(dt)
         local t = love.timer.getTime() - self.timer
 
         if t > self.delay then
-            GameState = Game()
+            GameState = CharacterSelection()
         end
     end
 end
@@ -70,7 +71,7 @@ function Menu:draw()
         love.graphics.getWidth() / 2 - self.background:getWidth() / 2 + self.offset.x,
         love.graphics.getHeight() / 2 - self.background:getHeight() / 2 + self.offset.y)
 
-    love.graphics.setColor(0, 0, 0, 0.2)
+    love.graphics.setColor(0, 0, 0, 0.3)
     love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setColor(1, 1, 1, 1)
 

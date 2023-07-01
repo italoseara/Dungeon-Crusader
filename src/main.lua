@@ -1,21 +1,26 @@
 local Vector = require 'libs.vector'
 
 local CustomCursor = require 'assets.scripts.CustomCursor'
+
+local CharacterSelection = require 'assets.scripts.states.CharacterSelection'
 local StartScreen = require 'assets.scripts.states.Start'
 local Menu = require 'assets.scripts.states.Menu'
 local Game = require 'assets.scripts.states.Game'
+
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    GameState = StartScreen()
     Cursor    = CustomCursor(2)
+    GameState = StartScreen()
+    Mouse     = Vector(0, 0)
 end
 
 function love.update(dt)
     GameState:update(dt)
     Cursor:update()
+
     Mouse = Vector(love.mouse.getX(), love.mouse.getY())
 end
 

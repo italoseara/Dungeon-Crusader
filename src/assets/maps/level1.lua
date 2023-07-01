@@ -2635,8 +2635,8 @@ return {
           shape = "rectangle",
           x = 672,
           y = 369,
-          width = 10,
-          height = 22,
+          width = 16,
+          height = 10,
           rotation = 0,
           visible = true,
           properties = {}
