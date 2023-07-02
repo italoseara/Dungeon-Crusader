@@ -18,7 +18,7 @@ function Player:new(x, y, world, camera, characterID)
     self.position = Vector(x, y)
     self.velocity = Vector(0, 0)
     self.friction = 10
-    self.speed = 1200
+    self.speed = 800
 
     -- Collision
     self.width = 10
@@ -29,14 +29,20 @@ function Player:new(x, y, world, camera, characterID)
         self.width, self.height, 2)
     self.collider:setCollisionClass('Player')
     self.collider:setFixedRotation(true)
+    self.collider:setObject(self)
 
     -- Keybinds
     self.keybinds = {
         up = 'w',
         down = 's',
         left = 'a',
-        right = 'd'
+        right = 'd',
+        interact = 'e',
+        drop = 'q',
     }
+
+    -- Weapon
+    self.weapon = nil
 
     -- Animation
     local images = {
@@ -54,7 +60,7 @@ function Player:new(x, y, world, camera, characterID)
                     images.idle:getHeight(),
                     images.idle:getWidth(),
                     images.idle:getHeight())('1-4', 1),
-                0.2)
+                0.15)
         },
         run = {
             image = images.run,
@@ -79,10 +85,21 @@ function Player:new(x, y, world, camera, characterID)
     }
 
     self.currentAnimation = self.animation.idle
-    self.direction = Direction.RIGHT
+
+    self.walkingDirection = Direction.RIGHT
+    self.mouseDirection = Direction.RIGHT
+
+    -- Attacking animation
+    self.attacking = false
+    self.attackTimer = 0
+    self.attackAngle = 0 -- The angle of the attack when it was started
+    self.attackChange = false
+
+    -- Pickup
+    self.lastPickup = 0
 end
 
-function Player:move(dt)
+function Player:updateMovement(dt)
     local direction = Vector(0, 0)
 
     if love.keyboard.isDown(self.keybinds.up) then direction.y = direction.y - 1 end
@@ -95,42 +112,104 @@ function Player:move(dt)
     self.velocity = self.velocity + direction * self.speed * dt
 end
 
-function Player:physics(dt)
+function Player:updatePhysics(dt)
     self.collider:setLinearVelocity(self.velocity.x, self.velocity.y)
     self.position = Vector(self.collider:getPosition())
     self.velocity = self.velocity * (1 - math.min(dt * self.friction, 1))
 end
 
 function Player:updateAnimations(dt)
-    if self.velocity:len() > 70 then
-        self.currentAnimation = self.animation.run
-    else
-        self.currentAnimation = self.animation.idle
-    end
-
-    -- Change direction based on mouse position relative to player
     local screenPos = Vector(self.camera:cameraCoords(self.position.x, self.position.y))
 
-    self.direction = Direction.LEFT
-    if Mouse.x > screenPos.x then
-        self.direction = Direction.RIGHT
+    if self.velocity:len() > 50 then
+        self.currentAnimation = self.animation.run
+
+        -- Change direction based on velocity
+        self.walkingDirection = Direction.LEFT
+        if self.velocity.x > 0 then
+            self.walkingDirection = Direction.RIGHT
+        end
+    else
+        self.currentAnimation = self.animation.idle
+        self.walkingDirection = self.mouseDirection
     end
 
+    -- Change direction based on mouse position
+    if not self.attacking then
+        self.mouseDirection = Direction.LEFT
+        if Mouse.x > screenPos.x then
+            self.mouseDirection = Direction.RIGHT
+        end
+    end
 
     self.currentAnimation.animation:update(dt)
 end
 
+function Player:updateAttack(dt)
+    if not self.attacking and self.weapon and love.mouse.isDown(1) then
+        self.attackAngle = self:getWeaponAngle()
+        self.attackTimer = love.timer.getTime()
+        self.attacking = true
+    end
+
+    if self.attacking then
+        if love.timer.getTime() - self.attackTimer > self.weapon.attackSpeed then
+            self.attacking = false
+        end
+    end
+end
+
+function Player:dropWeapon(dt)
+    if self.weapon and love.keyboard.isDown(self.keybinds.drop) and not self.attacking then
+        self.weapon:drop(self.position.x, self.position.y)
+        self.weapon = nil
+    end
+end
+
 function Player:update(dt)
-    self:move(dt)
-    self:physics(dt)
+    self:updateMovement(dt)
+    self:updatePhysics(dt)
     self:updateAnimations(dt)
+    self:updateAttack(dt)
+    self:dropWeapon(dt)
+end
+
+function Player:getWeaponAngle()
+    if self.attacking then
+        local t = love.timer.getTime() - self.attackTimer
+        return self.weapon:getAttackAngle(t, self.attackAngle, self.mouseDirection)
+    end
+
+    local screenPos = Vector(self.camera:cameraCoords(self.position.x, self.position.y + 4))
+    local gunAngle = math.atan2(Mouse.y - screenPos.y + self.height / 2, Mouse.x - screenPos.x)
+
+    if not self.isReloading then
+        return gunAngle
+    end
+
+    return gunAngle
+end
+
+function Player:drawWeapon()
+    if self.weapon then
+        love.graphics.draw(
+            self.weapon.image,
+            self.position.x,
+            self.position.y + 4,
+            self:getWeaponAngle() + math.rad(90),
+            self.mouseDirection * 0.8, 0.8,
+            self.weapon.image:getWidth() / 2,
+            self.weapon.image:getHeight() / 2 + 12
+        )
+    end
 end
 
 function Player:draw()
+    self:drawWeapon()
     self.currentAnimation.animation:draw(
         self.currentAnimation.image,
         self.position.x, self.position.y,
-        0, self.direction * 0.9, 0.9,
+        0, self.walkingDirection * 0.9, 0.9,
         self.width / 2 + 3, self.height + 3)
 end
 

@@ -56,8 +56,8 @@ function ButtonPrompt:new(button)
     )
 end
 
-function ButtonPrompt:draw(x, y)
-    love.graphics.draw(self.image, self.quad, x, y)
+function ButtonPrompt:draw(x, y, scale)
+    love.graphics.draw(self.image, self.quad, x, y, 0, scale, scale)
 end
 
 return ButtonPrompt
