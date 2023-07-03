@@ -12,7 +12,7 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    GameState = StartScreen()
+    GameState = CharacterSelection()
 
     Cursor    = CustomCursor(2)
     Mouse     = Vector(0, 0)
@@ -56,21 +56,17 @@ function dump(o)
     end
 end
 
-Easing = {}
+Ease = {}
 
-function Easing.easeInExpo(x)
-    if x == 0 then
-        return 0
-    else
-        return math.pow(2, 10 * x - 10)
-    end
+function Ease.outCubic(x)
+    return 1 - math.pow(1 - x, 3)
 end
 
-function Easing.easeInOutSine(x)
+function Ease.inOutSine(x)
     return -(math.cos(math.pi * x) - 1) / 2
 end
 
-function Easing.easeInOutBack(x)
+function Ease.inOutBack(x)
     local c1 = 1.70158;
     local c2 = c1 * 1.525;
 
@@ -81,10 +77,10 @@ function Easing.easeInOutBack(x)
     end
 end
 
-function Easing.swing(x)
+function Ease.swing(x)
     if x < 0.5 then
-        return Easing.easeInOutSine(x * 2) / 2
+        return Ease.inOutSine(x * 2) / 2
     else
-        return -1.25 * Easing.easeInOutBack((x - 0.5) * 2) / 2 + 0.5
+        return -1.25 * Ease.inOutBack((x - 0.5) * 2) / 2 + 0.5
     end
 end

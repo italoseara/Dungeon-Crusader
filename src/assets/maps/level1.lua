@@ -2545,7 +2545,7 @@ return {
           x = 210,
           y = 228,
           width = 12,
-          height = 32,
+          height = 22,
           rotation = 0,
           visible = true,
           properties = {}
@@ -2558,7 +2558,7 @@ return {
           x = 242,
           y = 228,
           width = 12,
-          height = 32,
+          height = 22,
           rotation = 0,
           visible = true,
           properties = {}
@@ -2571,7 +2571,7 @@ return {
           x = 274,
           y = 228,
           width = 12,
-          height = 32,
+          height = 22,
           rotation = 0,
           visible = true,
           properties = {}
@@ -2584,7 +2584,7 @@ return {
           x = 306,
           y = 228,
           width = 12,
-          height = 32,
+          height = 22,
           rotation = 0,
           visible = true,
           properties = {}

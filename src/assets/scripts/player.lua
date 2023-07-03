@@ -1,6 +1,7 @@
 local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
 local Anim8 = require 'libs.anim8'
+local Timer = require 'libs.timer'
 
 local Player = Class:extend()
 
@@ -38,7 +39,7 @@ function Player:new(x, y, world, camera, characterID)
         left = 'a',
         right = 'd',
         interact = 'e',
-        drop = 'q',
+        drop = 'g',
     }
 
     -- Weapon
@@ -48,7 +49,6 @@ function Player:new(x, y, world, camera, characterID)
     local images = {
         idle = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_idle.png'),
         run = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_run.png'),
-        hit = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_hit.png'),
     }
 
     self.animation = {
@@ -71,16 +71,6 @@ function Player:new(x, y, world, camera, characterID)
                     images.run:getWidth(),
                     images.run:getHeight())('1-4', 1),
                 0.1)
-        },
-        hit = {
-            image = images.hit,
-            animation = Anim8.newAnimation(
-                Anim8.newGrid(
-                    images.hit:getWidth(),
-                    images.hit:getHeight(),
-                    images.hit:getWidth(),
-                    images.hit:getHeight())(1, 1),
-                1)
         },
     }
 
@@ -121,21 +111,21 @@ end
 function Player:updateAnimations(dt)
     local screenPos = Vector(self.camera:cameraCoords(self.position.x, self.position.y))
 
-    if self.velocity:len() > 50 then
-        self.currentAnimation = self.animation.run
-
-        -- Change direction based on velocity
-        self.walkingDirection = Direction.LEFT
-        if self.velocity.x > 0 then
-            self.walkingDirection = Direction.RIGHT
-        end
-    else
-        self.currentAnimation = self.animation.idle
-        self.walkingDirection = self.mouseDirection
-    end
-
-    -- Change direction based on mouse position
     if not self.attacking then
+        if self.velocity:len() > 50 then
+            self.currentAnimation = self.animation.run
+
+            -- Change direction based on velocity
+            self.walkingDirection = Direction.LEFT
+            if self.velocity.x > 0 then
+                self.walkingDirection = Direction.RIGHT
+            end
+        else
+            self.currentAnimation = self.animation.idle
+            self.walkingDirection = self.mouseDirection
+        end
+
+        -- Change direction based on mouse position
         self.mouseDirection = Direction.LEFT
         if Mouse.x > screenPos.x then
             self.mouseDirection = Direction.RIGHT
@@ -149,11 +139,17 @@ function Player:updateAttack(dt)
     if not self.attacking and self.weapon and love.mouse.isDown(1) then
         self.attackAngle = self:getWeaponAngle()
         self.attackTimer = love.timer.getTime()
+        self.walkingDirection = self.mouseDirection
         self.attacking = true
+
+        Timer.after(self.weapon.attackSpeed * 0.75, function()
+            self.weapon:onAttack(self.attackAngle)
+        end)
     end
 
     if self.attacking then
         if love.timer.getTime() - self.attackTimer > self.weapon.attackSpeed then
+            self.weapon:onAttackEnd(self.attackAngle)
             self.attacking = false
         end
     end
@@ -181,13 +177,9 @@ function Player:getWeaponAngle()
     end
 
     local screenPos = Vector(self.camera:cameraCoords(self.position.x, self.position.y + 4))
-    local gunAngle = math.atan2(Mouse.y - screenPos.y + self.height / 2, Mouse.x - screenPos.x)
+    local angle = math.atan2(Mouse.y - screenPos.y + self.height / 2, Mouse.x - screenPos.x)
 
-    if not self.isReloading then
-        return gunAngle
-    end
-
-    return gunAngle
+    return angle
 end
 
 function Player:drawWeapon()
@@ -205,12 +197,12 @@ function Player:drawWeapon()
 end
 
 function Player:draw()
-    self:drawWeapon()
     self.currentAnimation.animation:draw(
         self.currentAnimation.image,
         self.position.x, self.position.y,
         0, self.walkingDirection * 0.9, 0.9,
         self.width / 2 + 3, self.height + 3)
+    self:drawWeapon()
 end
 
 function Player:drawUI()
