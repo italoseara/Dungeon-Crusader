@@ -3,6 +3,8 @@ local Vector = require 'libs.vector'
 local Anim8 = require 'libs.anim8'
 local Timer = require 'libs.timer'
 
+local DamageIndicator = require 'assets.scripts.ui.DamageIndicator'
+
 local Player = Class:extend()
 
 local Direction = {
@@ -10,16 +12,26 @@ local Direction = {
     RIGHT = 1
 }
 
-function Player:new(x, y, world, camera, characterID)
-    -- World
-    self.world = world
-    self.camera = camera
+function Player:new(x, y, game, characterID)
+    -- Game
+    self.game = game
+    self.world = game.world
+    self.camera = game.camera
 
     -- Movement
     self.position = Vector(x, y)
     self.velocity = Vector(0, 0)
     self.friction = 10
     self.speed = 800
+
+    -- Health
+    self.maxHealth = 200
+    self.health = self.maxHealth
+    self.dead = false
+
+    -- Damage
+    self.lastHit = 0
+    self.damageIndicators = {}
 
     -- Collision
     self.width = 10
@@ -31,6 +43,29 @@ function Player:new(x, y, world, camera, characterID)
     self.collider:setCollisionClass('Player')
     self.collider:setFixedRotation(true)
     self.collider:setObject(self)
+
+    self.collider:setPreSolve(function(collider_1, collider_2, contact)
+        local other = collider_2:getObject()
+
+        if other.type == 'enemy' and not other.dead then
+            if self.lastHit + 0.5 < love.timer.getTime() then
+                self.lastHit = love.timer.getTime()
+                self.health = self.health - other.attackDamage
+
+                if self.health <= 0 then
+                    self:die()
+                end
+
+                -- Apply knockback
+                local direction = Vector(self.position.x - other.position.x, self.position.y - other.position.y)
+                    :normalized()
+                self.velocity = self.velocity + direction:normalized() * 250
+
+                local damageIndicator = DamageIndicator(other.attackDamage, self)
+                table.insert(self.damageIndicators, damageIndicator)
+            end
+        end
+    end)
 
     -- Keybinds
     self.keybinds = {
@@ -82,11 +117,19 @@ function Player:new(x, y, world, camera, characterID)
     -- Attacking animation
     self.attacking = false
     self.attackTimer = 0
-    self.attackAngle = 0 -- The angle of the attack when it was started
-    self.attackChange = false
+    self.attackAngle = 0
 
     -- Pickup
     self.lastPickup = 0
+end
+
+function Player:die()
+    self.health = 0
+    self.dead = true
+    
+    if not self.weapon then return end
+    self.weapon:drop(self.position.x, self.position.y)
+    self.weapon = nil
 end
 
 function Player:updateMovement(dt)
@@ -111,20 +154,24 @@ end
 function Player:updateAnimations(dt)
     local screenPos = Vector(self.camera:cameraCoords(self.position.x, self.position.y))
 
-    if not self.attacking then
-        if self.velocity:len() > 50 then
-            self.currentAnimation = self.animation.run
+    if self.velocity:len() > 50 then
+        self.currentAnimation = self.animation.run
 
-            -- Change direction based on velocity
+        -- Change direction based on velocity
+        if not self.attacking then
             self.walkingDirection = Direction.LEFT
             if self.velocity.x > 0 then
                 self.walkingDirection = Direction.RIGHT
             end
-        else
-            self.currentAnimation = self.animation.idle
+        end
+    else
+        self.currentAnimation = self.animation.idle
+        if not self.attacking then
             self.walkingDirection = self.mouseDirection
         end
+    end
 
+    if not self.attacking then
         -- Change direction based on mouse position
         self.mouseDirection = Direction.LEFT
         if Mouse.x > screenPos.x then
@@ -149,7 +196,6 @@ function Player:updateAttack(dt)
 
     if self.attacking then
         if love.timer.getTime() - self.attackTimer > self.weapon.attackSpeed then
-            self.weapon:onAttackEnd(self.attackAngle)
             self.attacking = false
         end
     end
@@ -162,9 +208,21 @@ function Player:dropWeapon(dt)
     end
 end
 
+function Player:updateDamageIndicators()
+    for i, damageIndicator in ipairs(self.damageIndicators) do
+        if damageIndicator.dead then
+            table.remove(self.damageIndicators, i)
+        end
+    end
+end
+
 function Player:update(dt)
-    self:updateMovement(dt)
+    self:updateDamageIndicators()
     self:updatePhysics(dt)
+
+    if self.dead then return end
+
+    self:updateMovement(dt)
     self:updateAnimations(dt)
     self:updateAttack(dt)
     self:dropWeapon(dt)
@@ -196,16 +254,43 @@ function Player:drawWeapon()
     end
 end
 
-function Player:draw()
+function Player:drawBody()
+    local rotation = 0
+    if self.dead then
+        rotation = -math.pi / 2 * self.walkingDirection
+    end
+
     self.currentAnimation.animation:draw(
         self.currentAnimation.image,
         self.position.x, self.position.y,
-        0, self.walkingDirection * 0.9, 0.9,
+        rotation, self.walkingDirection * 0.9, 0.9,
         self.width / 2 + 3, self.height + 3)
+end
+
+function Player:drawHit()
+    if love.timer.getTime() - self.lastHit < 0.1 then
+        love.graphics.setColor(1, 0, 0, 0.3)
+        love.graphics.setShader(Shaders.damage)
+        self:drawBody()
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.setShader()
+    end
+end
+
+function Player:drawDamageIndicators()
+    for i, damageIndicator in ipairs(self.damageIndicators) do
+        damageIndicator:draw()
+    end
+end
+
+function Player:draw()
+    self:drawBody()
+    self:drawHit()
     self:drawWeapon()
 end
 
 function Player:drawUI()
+    self:drawDamageIndicators()
 end
 
 return Player

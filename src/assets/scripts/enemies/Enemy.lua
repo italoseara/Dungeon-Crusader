@@ -1,6 +1,7 @@
 local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
 local Anim8 = require 'libs.anim8'
+local Timer = require 'libs.timer'
 
 local DamageIndicator = require 'assets.scripts.ui.DamageIndicator'
 
@@ -21,7 +22,10 @@ function Enemy:new(x, y, game)
     -- self.attackDamage
     -- self.speed
 
+    self.type = 'enemy'
+
     -- Health
+    self.dead = false
     self.maxHealth = self.maxHealth or 100
     self.health = self.maxHealth
 
@@ -87,6 +91,7 @@ function Enemy:updateMovement(dt)
 end
 
 function Enemy:updatePhysics(dt)
+    if not self.collider then return end
     self.collider:setLinearVelocity(self.velocity.x, self.velocity.y)
     self.position = Vector(self.collider:getPosition())
     self.velocity = self.velocity * (1 - math.min(dt * self.friction, 1))
@@ -123,7 +128,13 @@ function Enemy:takeDamage(damage, angle, knockback)
 end
 
 function Enemy:die()
+    self.health = 0
+    self.dead = true
 
+    Timer.after(5, function()
+        self.collider:destroy()
+        self.game:removeEnemy(self)
+    end)
 end
 
 function Enemy:updateDamageIndicators(dt)
@@ -141,18 +152,41 @@ function Enemy:drawDamageIndicators()
 end
 
 function Enemy:update(dt)
-    self:updateMovement(dt)
-    self:updatePhysics(dt)
-    self:updateAnimations(dt)
     self:updateDamageIndicators(dt)
+    self:updatePhysics(dt)
+
+    if self.dead then return end
+
+    self:updateMovement(dt)
+    self:updateAnimations(dt)
 end
 
-function Enemy:draw()
+function Enemy:drawBody()
+    local rotation = 0
+    if self.dead then
+        rotation = -math.pi / 2 * self.walkingDirection
+    end
+
     self.currentAnimation.animation:draw(
         self.currentAnimation.image,
         self.position.x, self.position.y,
-        0, self.walkingDirection * 0.9, 0.9,
+        rotation, self.walkingDirection * 0.9, 0.9,
         self.width / 2 + 3, self.height + 3)
+end
+
+function Enemy:drawHit()
+    if love.timer.getTime() - self.lastHit < 0.1 then
+        love.graphics.setColor(1, 0, 0, 0.3)
+        love.graphics.setShader(Shaders.damage)
+        self:drawBody()
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.setShader()
+    end
+end
+
+function Enemy:draw()
+    self:drawBody()
+    self:drawHit()
 end
 
 function Enemy:drawUI()

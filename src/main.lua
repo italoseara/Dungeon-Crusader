@@ -16,10 +16,14 @@ function love.load()
 
     Cursor    = CustomCursor(2)
     Mouse     = Vector(0, 0)
+    Shaders   = {
+        fog    = love.graphics.newShader('assets/shaders/fog.glsl'),
+        damage = love.graphics.newShader('assets/shaders/damage.glsl'),
+    }
 end
 
 function love.update(dt)
-    GameState:update(dt)
+    GameState:update(dt)    
     Cursor:update()
 
     Mouse = Vector(love.mouse.getX(), love.mouse.getY())
@@ -28,14 +32,6 @@ end
 function love.draw()
     GameState:draw()
     Cursor:draw()
-end
-
-function love.keypressed(k)
-    if GameState.keypressed then GameState:keypressed(k) end
-end
-
-function love.mousepressed(x, y, b)
-    if GameState.mousepressed then GameState:mousepressed(x, y, b) end
 end
 
 function math.lerp(a, b, t)

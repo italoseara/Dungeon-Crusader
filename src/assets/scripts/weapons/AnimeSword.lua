@@ -4,7 +4,7 @@ local AnimeSword = Weapon:extend()
 
 function AnimeSword:new(game)
     -- Stats
-    self.attackRange = 15
+    self.attackRange = 10
     self.attackRadius = 15
     self.attackDamage = 40
     self.attackSpeed = 1.5

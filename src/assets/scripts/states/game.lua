@@ -25,13 +25,13 @@ function Game:new(characterID)
     self.world = WF.newWorld(0, 0)
     self.world:addCollisionClass('Enemy')
     self.world:addCollisionClass('Player')
-    self.world:addCollisionClass('Weapon', {ignores = {'Weapon', 'Player'}})
+    self.world:addCollisionClass('Weapon', { ignores = { 'Weapon', 'Player' } })
     self.world:addCollisionClass('Wall')
 
     self.level = Level(self.world)
 
     -- Player
-    self.player = Player(self.level.spawn.x, self.level.spawn.y, self.world, self.camera, characterID)
+    self.player = Player(self.level.spawn.x, self.level.spawn.y, self, characterID)
     self.camera:lookAt(self.player.position.x, self.player.position.y)
 
     -- Items
@@ -50,6 +50,15 @@ end
 
 function Game:spawnEnemy(cls, x, y)
     table.insert(self.enemies, cls(x, y, self))
+end
+
+function Game:removeEnemy(enemy)
+    for i, v in ipairs(self.enemies) do
+        if v == enemy then
+            table.remove(self.enemies, i)
+            break
+        end
+    end
 end
 
 function Game:updateEnemies(dt)
@@ -132,7 +141,9 @@ function Game:draw()
     self.level:draw()
     self:drawItems()
     self:drawEnemies()
+    
     self.player:draw()
+    self.level:drawDoorsArch()
     -- self.world:draw()
 
     self.camera:detach()

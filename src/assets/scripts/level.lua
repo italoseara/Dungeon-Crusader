@@ -16,9 +16,6 @@ function Level:new(world)
     self.spawn.x = self.spawn.x + 8
     self.spawn.y = self.spawn.y + 8
 
-    -- Set fog shader
-    self.fogShader = love.graphics.newShader('assets/shaders/fog.glsl')
-
     -- Create walls
     self.world = world
 
@@ -40,7 +37,8 @@ function Level:new(world)
     self.images = {
         fountain_blue = love.graphics.newImage('assets/images/animation/fountain_blue.png'),
         fountain_red  = love.graphics.newImage('assets/images/animation/fountain_red.png'),
-        door          = love.graphics.newImage('assets/images/animation/door_open.png')
+        door          = love.graphics.newImage('assets/images/animation/door_open.png'),
+        door_arch     = love.graphics.newImage('assets/images/animation/door_arch.png')
     }
 
     self.animations = {
@@ -60,7 +58,20 @@ function Level:drawDoors()
     for _, obj in pairs(self.map.layers['Interact'].objects) do
         if obj.name == 'door' then
             local x, y = obj.x, obj.y - 12
-            local image = self.images['door']
+            local image = self.images.door
+
+            if image then
+                love.graphics.draw(image, x, y)
+            end
+        end
+    end
+end
+
+function Level:drawDoorsArch()
+    for _, obj in pairs(self.map.layers['Interact'].objects) do
+        if obj.name == 'door' then
+            local x, y = obj.x - 16, obj.y - 28
+            local image = self.images.door_arch
 
             if image then
                 love.graphics.draw(image, x, y)
@@ -90,8 +101,8 @@ function Level:draw()
 end
 
 function Level:drawFog()
-    love.graphics.setShader(self.fogShader)
-    self.fogShader:send('radius', 700)
+    love.graphics.setShader(Shaders.fog)
+    Shaders.fog:send('radius', 700)
     love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setShader()
 end

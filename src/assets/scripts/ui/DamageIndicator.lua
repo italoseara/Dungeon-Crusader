@@ -27,7 +27,7 @@ function DamageIndicator:draw()
     love.graphics.setColor(1, 0, 0, 1)
     love.graphics.draw(self.text,
         screenPosition.x,
-        screenPosition.y - 10 * Ease.outCubic(love.timer.getTime() - self.timer))
+        screenPosition.y - 15 * Ease.outCubic(love.timer.getTime() - self.timer))
     love.graphics.setColor(1, 1, 1, 1)
 end
 

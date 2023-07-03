@@ -37,17 +37,13 @@ function Weapon:onAttack(angle)
     collider:setPreSolve(function(collider_1, collider_2, contact)
         if collider_2.collision_class == 'Enemy' then
             collider_2.object:takeDamage(self.attackDamage, angle, self.attackKnockback)
-            contact:setEnabled(false)
         end
+        contact:setEnabled(false)
     end)
 
-    Timer.after(0.1, function()
+    Timer.after(0.01, function()
         collider:destroy()
     end)
-end
-
-function Weapon:onAttackEnd(angle)
-
 end
 
 return Weapon
