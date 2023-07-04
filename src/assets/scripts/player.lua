@@ -3,6 +3,11 @@ local Vector = require 'libs.vector'
 local Anim8 = require 'libs.anim8'
 local Timer = require 'libs.timer'
 
+local Sword = require 'assets.scripts.weapons.Sword'
+local AnimeSword = require 'assets.scripts.weapons.AnimeSword'
+local MagicStaff = require 'assets.scripts.weapons.MagicStaff'
+local Bow = require 'assets.scripts.weapons.Bow'
+
 local DamageIndicator = require 'assets.scripts.ui.DamageIndicator'
 
 local Player = Class:extend()
@@ -12,7 +17,60 @@ local Direction = {
     RIGHT = 1
 }
 
+local Characters = {
+    knight_m = {
+        weapon = Sword,
+        maxHealth = 200,
+        maxMana = 100,
+        speed = 800,
+    },
+    wizard_m = {
+        weapon = MagicStaff,
+        maxHealth = 100,
+        maxMana = 200,
+        speed = 800,
+    },
+    lizard_m = {
+        weapon = Bow,
+        maxHealth = 150,
+        maxMana = 150,
+        speed = 900,
+    },
+    dwarf_m = {
+        weapon = AnimeSword,
+        maxHealth = 250,
+        maxMana = 50,
+        speed = 600,
+    },
+    knight_f = {
+        weapon = Sword,
+        maxHealth = 200,
+        maxMana = 100,
+        speed = 800,
+    },
+    wizard_f = {
+        weapon = MagicStaff,
+        maxHealth = 100,
+        maxMana = 200,
+        speed = 800,
+    },
+    lizard_f = {
+        weapon = Bow,
+        maxHealth = 150,
+        maxMana = 150,
+        speed = 900,
+    },
+    dwarf_f = {
+        weapon = AnimeSword,
+        maxHealth = 250,
+        maxMana = 50,
+        speed = 600,
+    },
+}
+
 function Player:new(x, y, game, characterID)
+    local character = Characters[characterID]
+
     -- Game
     self.game = game
     self.world = game.world
@@ -22,16 +80,16 @@ function Player:new(x, y, game, characterID)
     self.position = Vector(x, y)
     self.velocity = Vector(0, 0)
     self.friction = 10
-    self.speed = 800
+    self.speed = character.speed
 
     -- Health
-    self.maxHealth = 200
+    self.maxHealth = character.maxHealth
     self.health = self.maxHealth
     self.healthRegen = 1
     self.dead = false
 
     -- Mana
-    self.maxMana = 100
+    self.maxMana = character.maxMana
     self.mana = self.maxMana
     self.manaRegen = 5
 
@@ -83,7 +141,7 @@ function Player:new(x, y, game, characterID)
     }
 
     -- Weapon
-    self.weapon = nil
+    self.weapon = character.weapon(game)
 
     -- Animation
     self.images = {
@@ -222,6 +280,7 @@ function Player:updateAttack(dt)
         self.attackTimer = love.timer.getTime()
         self.walkingDirection = self.mouseDirection
         self.attacking = true
+        self.weapon:onAttackBegin(self.attackAngle)
 
         Timer.after(self.weapon.attackSpeed * 0.75, function()
             if not self.weapon then return end
@@ -280,15 +339,7 @@ end
 
 function Player:drawWeapon()
     if self.weapon then
-        love.graphics.draw(
-            self.weapon.image,
-            self.position.x,
-            self.position.y + 4,
-            self:getWeaponAngle() + math.rad(90),
-            self.mouseDirection * 0.8, 0.8,
-            self.weapon.image:getWidth() / 2,
-            self.weapon.image:getHeight() / 2 + 12
-        )
+        self.weapon:draw(self)
     end
 end
 

@@ -6,10 +6,6 @@ local Timer = require 'libs.timer'
 local Level = require 'assets.scripts.Level'
 local Player = require 'assets.scripts.Player'
 
--- Weapons
-local AnimeSword = require 'assets.scripts.weapons.AnimeSword'
-local Sword = require 'assets.scripts.weapons.Sword'
-local MagicStaff = require 'assets.scripts.weapons.MagicStaff'
 local Item = require 'assets.scripts.Item'
 
 -- Enemies
@@ -50,15 +46,12 @@ function Game:new(characterID)
     self.state = 'running'
 
     -- Test
-    self:dropItem(MagicStaff, self.level.spawn.x + 32, self.level.spawn.y)
-    self:dropItem(AnimeSword, self.level.spawn.x + 42, self.level.spawn.y)
-
     self:spawnEnemy(Plague, self.level.spawn.x + 64, self.level.spawn.y)
     self:spawnEnemy(Plague, self.level.spawn.x + 64, self.level.spawn.y + 32)
 end
 
-function Game:addProjectile(collider, image, scale)
-    table.insert(self.projectiles, { collider = collider, image = image, scale = scale })
+function Game:addProjectile(collider, image, scale, angle)
+    table.insert(self.projectiles, { collider = collider, image = image, scale = scale, angle = angle })
 end
 
 function Game:removeProjectile(collider)
@@ -73,7 +66,7 @@ end
 function Game:drawProjectiles()
     for _, projectile in pairs(self.projectiles) do
         local x, y = projectile.collider:getPosition()
-        local angle = projectile.collider:getAngle()
+        local angle = projectile.angle
         local scale = projectile.scale
         local w, h = projectile.image:getDimensions()
 

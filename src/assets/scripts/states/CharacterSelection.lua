@@ -1,5 +1,6 @@
 local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
+local Anim8 = require 'libs.anim8'
 
 local CharacterButton = require 'assets.scripts.ui.CharacterButton'
 

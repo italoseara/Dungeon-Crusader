@@ -30,6 +30,10 @@ function Weapon:onPickup(player)
     player.weapon = self
 end
 
+function Weapon:onAttackBegin(angle)
+
+end
+
 function Weapon:onAttack(angle)
     local x = self.game.player.position.x + math.cos(angle) * self.attackRange
     local y = self.game.player.position.y + math.sin(angle) * self.attackRange
@@ -49,6 +53,18 @@ function Weapon:onAttack(angle)
     Timer.after(0.01, function()
         collider:destroy()
     end)
+end
+
+function Weapon:draw(player)
+    love.graphics.draw(
+        self.image,
+        player.position.x,
+        player.position.y + 4,
+        player:getWeaponAngle() + math.rad(90),
+        player.mouseDirection * 0.8, 0.8,
+        self.image:getWidth() / 2,
+        self.image:getHeight() / 2 + 12
+    )
 end
 
 return Weapon
