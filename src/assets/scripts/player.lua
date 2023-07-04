@@ -43,7 +43,6 @@ function Player:new(x, y, game, characterID)
     self.collider:setCollisionClass('Player')
     self.collider:setFixedRotation(true)
     self.collider:setObject(self)
-
     self.collider:setPreSolve(function(collider_1, collider_2, contact)
         local other = collider_2:getObject()
 
@@ -59,7 +58,7 @@ function Player:new(x, y, game, characterID)
                 -- Apply knockback
                 local direction = Vector(self.position.x - other.position.x, self.position.y - other.position.y)
                     :normalized()
-                self.velocity = self.velocity + direction:normalized() * 250
+                self.velocity = self.velocity + direction:normalized() * 200
 
                 if self.dead then return end
                 table.insert(self.damageIndicators, DamageIndicator(-other.attackDamage, self))
@@ -81,30 +80,31 @@ function Player:new(x, y, game, characterID)
     self.weapon = nil
 
     -- Animation
-    local images = {
-        idle = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_idle.png'),
-        run = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_run.png'),
+    self.images = {
+        idle  = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_idle.png'),
+        run   = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_run.png'),
+        heart = love.graphics.newImage('assets/images/ui/ui_heart_full.png'),
     }
 
     self.animation = {
         idle = {
-            image = images.idle,
+            image = self.images.idle,
             animation = Anim8.newAnimation(
                 Anim8.newGrid(
-                    images.idle:getWidth() / 4,
-                    images.idle:getHeight(),
-                    images.idle:getWidth(),
-                    images.idle:getHeight())('1-4', 1),
+                    self.images.idle:getWidth() / 4,
+                    self.images.idle:getHeight(),
+                    self.images.idle:getWidth(),
+                    self.images.idle:getHeight())('1-4', 1),
                 0.15)
         },
         run = {
-            image = images.run,
+            image = self.images.run,
             animation = Anim8.newAnimation(
                 Anim8.newGrid(
-                    images.run:getWidth() / 4,
-                    images.run:getHeight(),
-                    images.run:getWidth(),
-                    images.run:getHeight())('1-4', 1),
+                    self.images.run:getWidth() / 4,
+                    self.images.run:getHeight(),
+                    self.images.run:getWidth(),
+                    self.images.run:getHeight())('1-4', 1),
                 0.1)
         },
     }
@@ -121,12 +121,26 @@ function Player:new(x, y, game, characterID)
 
     -- Pickup
     self.lastPickup = 0
+
+    -- Health regeneration
+    Timer.every(0.5, function()
+        if love.timer.getTime() - self.lastHit < 10 or
+            love.timer.getTime() - self.attackTimer < 10 or
+            self.dead then
+            return
+        end
+
+        if self.health < self.maxHealth then
+            self.health = self.health + 1
+            table.insert(self.damageIndicators, DamageIndicator(1, self, { 0, 1, 0, 1 }))
+        end
+    end)
 end
 
 function Player:die()
     self.health = 0
     self.dead = true
-    
+
     if not self.weapon then return end
     self.weapon:drop(self.position.x, self.position.y)
     self.weapon = nil
@@ -279,8 +293,25 @@ function Player:drawHit()
 end
 
 function Player:drawDamageIndicators()
-    for i, damageIndicator in ipairs(self.damageIndicators) do
+    for _, damageIndicator in ipairs(self.damageIndicators) do
         damageIndicator:draw()
+    end
+end
+
+function Player:drawHealth()
+    love.graphics.draw(self.images.heart,
+        10, love.graphics.getHeight() - (self.images.heart:getHeight() * 2) - 15,
+        0, 2, 2)
+
+    local text = love.graphics.newText(Fonts.big, tostring(self.health))
+    love.graphics.draw(text, 45, love.graphics.getHeight() - text:getHeight() - 10)
+end
+
+function Player:drawHealthHit()
+    if love.timer.getTime() - self.lastHit < 0.1 then
+        love.graphics.setColor(1, 0, 0, 0.6)
+        self:drawHealth()
+        love.graphics.setColor(1, 1, 1)
     end
 end
 
@@ -292,6 +323,8 @@ end
 
 function Player:drawUI()
     self:drawDamageIndicators()
+    self:drawHealth()
+    self:drawHealthHit()
 end
 
 return Player

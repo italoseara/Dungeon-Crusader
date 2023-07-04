@@ -15,24 +15,19 @@ function Menu:new()
     self.background = love.graphics.newImage('assets/images/menu.png')
     self.offset = Vector(0, 0)
 
-    self.fonts = {
-        logo   = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 96),
-        button = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 64)
-    }
-
     local btnOffset = Vector(100, 350)
 
     self.buttons = {
-        TextButton(self.fonts.button, 'Adventure', btnOffset.x, btnOffset.y, nil, 40, 0, 10, function()
+        TextButton(Fonts.big2, 'Adventure', btnOffset.x, btnOffset.y, nil, 40, 0, 10, function()
             if self.state == State.TRANSITION then return end
 
             self.state = State.TRANSITION
             self.timer = love.timer.getTime()
         end),
-        TextButton(self.fonts.button, 'Credits', btnOffset.x, 50 + btnOffset.y, nil, 40, 0, 10, function()
+        TextButton(Fonts.big2, 'Credits', btnOffset.x, 50 + btnOffset.y, nil, 40, 0, 10, function()
             love.system.openURL("https://github.com/italoseara")
         end),
-        TextButton(self.fonts.button, 'Exit', btnOffset.x, 100 + btnOffset.y, nil, 40, 0, 10, function()
+        TextButton(Fonts.big2, 'Exit', btnOffset.x, 100 + btnOffset.y, nil, 40, 0, 10, function()
             love.event.quit()
         end)
     }
@@ -76,7 +71,7 @@ function Menu:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- Draw the logo above the buttons
-    local text = love.graphics.newText(self.fonts.logo, 'Dungeon Crusader')
+    local text = love.graphics.newText(Fonts.big4, 'Dungeon Crusader')
     love.graphics.draw(text,
         love.graphics.getWidth() / 2 - text:getWidth() / 2,
         love.graphics.getHeight() / 2 - text:getHeight() / 2 - 200)

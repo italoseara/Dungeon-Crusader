@@ -5,10 +5,8 @@ local Timer = require 'libs.timer'
 local DamageIndicator = Class:extend()
 
 function DamageIndicator:new(damage, entity, color)
-    self.font = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 24)
-
     if damage > 0 then damage = '+' .. damage end
-    self.text = love.graphics.newText(self.font, damage)
+    self.text = love.graphics.newText(Fonts.medium2, damage)
 
     self.color = color or { 1, 0, 0, 1 }
 

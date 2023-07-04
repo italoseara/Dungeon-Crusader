@@ -12,16 +12,26 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    debug     = true
+    debug     = false
+
+    Shaders   = {
+        fog    = love.graphics.newShader('assets/shaders/fog.glsl'),
+        damage = love.graphics.newShader('assets/shaders/damage.glsl'),
+    }
+
+    Fonts     = {
+        medium  = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 16),
+        medium2 = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 24),
+        big     = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 32),
+        big2    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 64),
+        big3    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 84),
+        big4    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 96),
+    }
 
     GameState = CharacterSelection()
 
     Cursor    = CustomCursor(2)
     Mouse     = Vector(0, 0)
-    Shaders   = {
-        fog    = love.graphics.newShader('assets/shaders/fog.glsl'),
-        damage = love.graphics.newShader('assets/shaders/damage.glsl'),
-    }
 end
 
 function love.update(dt)

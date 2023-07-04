@@ -16,8 +16,6 @@ function CharacterSelection:new()
     self.background = love.graphics.newImage('assets/images/menu.png')
     self.offset = Vector(0, 0)
 
-    self.font = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 84)
-
     self.selected = nil
     self.state = State.MENU
     self.timer = 0
@@ -80,7 +78,7 @@ function CharacterSelection:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- Draw the logo above the buttons
-    local text = love.graphics.newText(self.font, 'Select your character')
+    local text = love.graphics.newText(Fonts.big3, 'Select your character')
     love.graphics.draw(text,
         love.graphics.getWidth() / 2 - text:getWidth() / 2,
         love.graphics.getHeight() / 2 - text:getHeight() / 2 - 200)

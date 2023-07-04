@@ -17,8 +17,7 @@ function StartScreen:new()
         transition = 1
     }
 
-    local font = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 16)
-    self.text  = love.graphics.newText(font, 'Made by Italo Seara')
+    self.text  = love.graphics.newText(Fonts.medium, 'Made by Italo Seara')
 
     love.graphics.setBackgroundColor(0, 0, 0)
 end
