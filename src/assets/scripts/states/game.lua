@@ -9,6 +9,7 @@ local Player = require 'assets.scripts.Player'
 -- Weapons
 local AnimeSword = require 'assets.scripts.weapons.AnimeSword'
 local Sword = require 'assets.scripts.weapons.Sword'
+local MagicStaff = require 'assets.scripts.weapons.MagicStaff'
 local Item = require 'assets.scripts.Item'
 
 -- Enemies
@@ -28,6 +29,7 @@ function Game:new(characterID)
     self.world:addCollisionClass('Crate')
     self.world:addCollisionClass('Wall')
     self.world:addCollisionClass('Weapon', { ignores = { 'Weapon', 'Player' } })
+    self.world:addCollisionClass('Projectile', { ignores = { 'Weapon', 'Player' } })
 
     self.level = Level(self, 1)
 
@@ -41,15 +43,42 @@ function Game:new(characterID)
     -- Enemies
     self.enemies = {}
 
+    -- Projectiles
+    self.projectiles = {}
+
     -- State
     self.state = 'running'
 
     -- Test
-    self:dropItem(Sword, self.level.spawn.x + 32, self.level.spawn.y)
+    self:dropItem(MagicStaff, self.level.spawn.x + 32, self.level.spawn.y)
     self:dropItem(AnimeSword, self.level.spawn.x + 42, self.level.spawn.y)
 
     self:spawnEnemy(Plague, self.level.spawn.x + 64, self.level.spawn.y)
     self:spawnEnemy(Plague, self.level.spawn.x + 64, self.level.spawn.y + 32)
+end
+
+function Game:addProjectile(collider, image, scale)
+    table.insert(self.projectiles, { collider = collider, image = image, scale = scale })
+end
+
+function Game:removeProjectile(collider)
+    for i, v in ipairs(self.projectiles) do
+        if v.collider == collider then
+            table.remove(self.projectiles, i)
+            break
+        end
+    end
+end
+
+function Game:drawProjectiles()
+    for _, projectile in pairs(self.projectiles) do
+        local x, y = projectile.collider:getPosition()
+        local angle = projectile.collider:getAngle()
+        local scale = projectile.scale
+        local w, h = projectile.image:getDimensions()
+
+        love.graphics.draw(projectile.image, x, y, angle, scale, scale, w / 2, h / 2)
+    end
 end
 
 function Game:spawnEnemy(cls, x, y)
@@ -122,30 +151,9 @@ function Game:updateItems(dt)
 end
 
 function Game:saveTime(time)
-    -- Format: [dd/mm/yyyy hh:mm:ss]-[time(mm:ss:ms)]
     local file = io.open('data/level' .. self.level.id .. '.dat', 'a+')
     if not file then return end
-
-    local times = {}
-    for line in file:lines() do
-        local date, time = line:match('(%d+/%d+/%d+ %d+:%d+:%d+) - (%d+:%d+:%d+)')
-        table.insert(times, { date = date, time = time })
-    end
-
-    -- Insert new time
-    table.insert(times, { level = self.level.id, date = os.date('%d/%m/%Y %H:%M:%S'), time = time })
-
-    -- Sort by time
-    table.sort(times, function(a, b) return a.time < b.time end)
-    file:close()
-
-    file = io.open('data/level' .. self.level.id .. '.dat', 'w+')
-    if not file then return end
-
-    for _, v in ipairs(times) do
-        file:write(v.date .. ' - ' .. v.time .. '\n')
-    end
-
+    file:write(os.date('%d/%m/%Y %H:%M:%S') .. ' - ' .. time .. '\n')
     file:close()
 end
 
@@ -220,6 +228,8 @@ function Game:draw()
 
     self.player:draw()
     self.level:drawDoorsArch()
+    self:drawProjectiles()
+
     if debug then self.world:draw() end
 
     self.camera:detach()

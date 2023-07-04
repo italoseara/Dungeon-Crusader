@@ -33,7 +33,7 @@ function Player:new(x, y, game, characterID)
     -- Mana
     self.maxMana = 100
     self.mana = self.maxMana
-    self.manaRegen = 1
+    self.manaRegen = 5
 
     -- Damage
     self.lastHit = 0
@@ -147,6 +147,13 @@ function Player:new(x, y, game, characterID)
             table.insert(self.damageIndicators, DamageIndicator(self.manaRegen, self, { 0, 0, 1, 1 }))
         end
     end)
+end
+
+function Player:spendMana(cost)
+    if self.mana < cost then return false end
+
+    self.mana = self.mana - cost
+    return true
 end
 
 function Player:die()

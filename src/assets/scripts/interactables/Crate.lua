@@ -23,7 +23,7 @@ function Crate:new(x, y, game, level)
     self.collider:setObject(self)
 
     self.collider:setPreSolve(function(collider_1, collider_2, contact)
-        if collider_2.collision_class == 'Weapon' then
+        if collider_2.collision_class == 'Weapon' or collider_2.collision_class == 'Projectile' then
             self.level:removeInteractable(self)
             self:dropPotion()
             collider_1:destroy()
