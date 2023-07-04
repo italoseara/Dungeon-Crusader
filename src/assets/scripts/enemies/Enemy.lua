@@ -26,8 +26,6 @@ function Enemy:new(x, y, game)
     -- Game
     self.game = game
     self.world = game.world
-    self.level = game.level
-    self.player = game.player
 
     -- Movement
     self.position = Vector(x, y)
@@ -87,12 +85,12 @@ function Enemy:new(x, y, game)
 end
 
 function Enemy:searchPath()
-    local map = self.level.map
+    local map = self.game.level.map
 
     local start = {}
     local goal = {}
     start.x, start.y = map:convertPixelToTile(self.position.x, self.position.y)
-    goal.x, goal.y = map:convertPixelToTile(self.player.position.x, self.player.position.y)
+    goal.x, goal.y = map:convertPixelToTile(self.game.player.position.x, self.game.player.position.y)
 
     goal.x = math.ceil(goal.x - 0.5)
     goal.y = math.ceil(goal.y - 0.5)
@@ -100,30 +98,30 @@ function Enemy:searchPath()
     start.y = math.ceil(start.y)
 
     self.path = AStar:find(map.width, map.height, start, goal, function(x, y)
-        return self.level:isFloor(x, y)
+        return self.game.level:isFloor(x, y)
     end, false, false)
 end
 
 function Enemy:updateMovement(dt)
     if not self.sawPlayer then
-        if (self.position - self.player.position):len() < self.viewDistance then
+        if (self.position - self.game.player.position):len() < self.viewDistance then
             self.sawPlayer = true
         end
 
         return
     end
 
-    if not self.path or (self.position - self.player.position):len() < 20 then
+    if not self.path or (self.position - self.game.player.position):len() < 30 then
         self.nextPosition = nil
-        local direction = (self.player.position - self.position):normalized()
+        local direction = (self.game.player.position - self.position):normalized()
         self.velocity = self.velocity + direction * self.speed * dt
     elseif self.path then
         local next = self.path[1]
 
         if next then
             self.nextPosition = Vector(
-                next.x * self.level.map.tilewidth - self.level.map.tilewidth / 2,
-                next.y * self.level.map.tileheight - self.level.map.tileheight / 2
+                next.x * self.game.level.map.tilewidth - self.game.level.map.tilewidth / 2,
+                next.y * self.game.level.map.tileheight - self.game.level.map.tileheight / 2
             )
 
             local direction = (self.nextPosition - self.position):normalized()
@@ -204,7 +202,13 @@ function Enemy:drawDamageIndicators()
     end
 end
 
+function Enemy:updateGameVariables()
+
+end
+
 function Enemy:update(dt)
+    self:updateGameVariables()
+
     self:updateDamageIndicators(dt)
     self:updatePhysics(dt)
 
@@ -224,7 +228,7 @@ function Enemy:drawBody()
         self.currentAnimation.image,
         self.position.x, self.position.y,
         rotation, self.walkingDirection * 0.9, 0.9,
-        self.width / 2 + 3, self.height + 3)
+        self.width / 2 + 3,self.height)
 end
 
 function Enemy:drawHit()
@@ -239,7 +243,7 @@ end
 
 function Enemy:drawPath()
     if self.path then
-        local map = self.level.map
+        local map = self.game.level.map
         local tileSize = map.tilewidth
         local tileoffset = Vector(map.tilewidth / 2, map.tileheight / 2)
 

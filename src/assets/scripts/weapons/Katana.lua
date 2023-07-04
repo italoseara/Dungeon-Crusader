@@ -6,7 +6,7 @@ function Katana:new(game)
     -- Stats
     self.attackRange = 15
     self.attackRadius = 10
-    self.attackDamage = 25
+    self.attackDamage = 40
     self.attackSpeed = 1
     self.attackKnockback = 150
 

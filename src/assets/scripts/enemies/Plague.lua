@@ -7,9 +7,9 @@ function Plague:new(x, y, world)
     self.width = 10
     self.height = 14
 
-    self.maxHealth = 100
+    self.maxHealth = 120
     self.attackSpeed = 1
-    self.attackDamage = 15
+    self.attackDamage = 20
 
     self.viewDistance = 70
 

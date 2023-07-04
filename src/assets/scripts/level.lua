@@ -6,6 +6,13 @@ local Anim8 = require 'libs.anim8'
 local Crate = require 'assets.scripts.interactables.Crate'
 local Door = require 'assets.scripts.interactables.Door'
 
+-- Enemies
+local Plague = require 'assets.scripts.enemies.Plague'
+local Ogre = require 'assets.scripts.enemies.Ogre'
+local Imp = require 'assets.scripts.enemies.Imp'
+local BigDemon = require 'assets.scripts.enemies.BigDemon'
+local OrcWarrior = require 'assets.scripts.enemies.OrcWarrior'
+
 local Level = Class:extend()
 
 function Level:new(game, id)
@@ -59,6 +66,23 @@ function Level:new(game, id)
 
     self.interactables = {}
     self:loadInteractables()
+    self:spawnEnemies()
+end
+
+function Level:spawnEnemies()
+    for _, obj in pairs(self.map.layers['Enemies'].objects) do
+        if obj.name == 'plague' then
+            self.game:spawnEnemy(Plague, obj.x + 8, obj.y + 8)
+        elseif obj.name == 'ogre' then
+            self.game:spawnEnemy(Ogre, obj.x + 8, obj.y + 8)
+        elseif obj.name == 'imp' then
+            self.game:spawnEnemy(Imp, obj.x + 8, obj.y + 8)
+        elseif obj.name == 'big_demon' then
+            self.game:spawnEnemy(BigDemon, obj.x + 8, obj.y + 8)
+        elseif obj.name == 'orc_warrior' then
+            self.game:spawnEnemy(OrcWarrior, obj.x + 8, obj.y + 8)
+        end
+    end
 end
 
 function Level:isFloor(x, y)

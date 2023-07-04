@@ -5,7 +5,7 @@ local GreenMagicStaff = Weapon:extend()
 function GreenMagicStaff:new(game)
     -- Stats
     self.attackRadius = 4
-    self.attackDamage = 25
+    self.attackDamage = 50
     self.attackSpeed = 0.5
     self.attackKnockback = 50
     self.projectileSpeed = 300

@@ -6,7 +6,7 @@ function Cleaver:new(game)
     -- Stats
     self.attackRange = 10
     self.attackRadius = 12
-    self.attackDamage = 20
+    self.attackDamage = 30
     self.attackSpeed = 1
     self.attackKnockback = 150
 

@@ -6,7 +6,7 @@ function GoldenSword:new(game)
     -- Stats
     self.attackRange = 10
     self.attackRadius = 10
-    self.attackDamage = 30
+    self.attackDamage = 40
     self.attackSpeed = 0.5
     self.attackKnockback = 150
 

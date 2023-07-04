@@ -8,15 +8,21 @@ local Player = require 'assets.scripts.Player'
 
 local Item = require 'assets.scripts.Item'
 
--- Enemies
-local Plague = require 'assets.scripts.enemies.Plague'
-
 local Game = Class:extend()
 
 function Game:new(characterID)
     -- Camera
     self.camera = Camera(0, 0, 4)
     self.camera.smoother = Camera.smooth.damped(10)
+
+    -- Enemies
+    self.enemies = {}
+
+    -- Items
+    self.items = {}
+
+    -- Projectiles
+    self.projectiles = {}
 
     -- Level
     self.world = WF.newWorld(0, 0)
@@ -33,21 +39,8 @@ function Game:new(characterID)
     self.player = Player(self.level.spawn.x, self.level.spawn.y, self, characterID)
     self.camera:lookAt(self.player.position.x, self.player.position.y)
 
-    -- Items
-    self.items = {}
-
-    -- Enemies
-    self.enemies = {}
-
-    -- Projectiles
-    self.projectiles = {}
-
     -- State
     self.state = 'running'
-
-    -- Test
-    self:spawnEnemy(Plague, self.level.spawn.x + 64, self.level.spawn.y)
-    self:spawnEnemy(Plague, self.level.spawn.x + 64, self.level.spawn.y + 32)
 end
 
 function Game:addProjectile(collider, image, scale, angle)

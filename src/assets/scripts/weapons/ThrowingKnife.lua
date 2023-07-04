@@ -7,7 +7,7 @@ local ThrowingKnife = Weapon:extend()
 function ThrowingKnife:new(game)
     -- Stats
     self.attackRadius = 4
-    self.attackDamage = 10
+    self.attackDamage = 20
     self.attackSpeed = 0.75
     self.attackKnockback = 50
     self.projectileSpeed = 300
