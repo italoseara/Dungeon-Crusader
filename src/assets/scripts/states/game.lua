@@ -26,6 +26,7 @@ function Game:new(characterID)
     self.world:addCollisionClass('Enemy')
     self.world:addCollisionClass('Player')
     self.world:addCollisionClass('Weapon', { ignores = { 'Weapon', 'Player' } })
+    self.world:addCollisionClass('Crate')
     self.world:addCollisionClass('Wall')
 
     self.level = Level(self.world)
@@ -144,7 +145,7 @@ function Game:draw()
     
     self.player:draw()
     self.level:drawDoorsArch()
-    -- self.world:draw()
+    if debug then self.world:draw() end
 
     self.camera:detach()
 

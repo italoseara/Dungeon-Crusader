@@ -9,9 +9,11 @@ function Plague:new(x, y, world)
 
     self.maxHealth = 100
     self.attackSpeed = 1
-    self.attackDamage = 10
+    self.attackDamage = 15
 
-    self.speed = 800
+    self.viewDistance = 70
+
+    self.speed = 600
 
     Plague.super.new(self, x, y, world)
 end

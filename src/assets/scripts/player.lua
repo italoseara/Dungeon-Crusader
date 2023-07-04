@@ -61,8 +61,8 @@ function Player:new(x, y, game, characterID)
                     :normalized()
                 self.velocity = self.velocity + direction:normalized() * 250
 
-                local damageIndicator = DamageIndicator(other.attackDamage, self)
-                table.insert(self.damageIndicators, damageIndicator)
+                if self.dead then return end
+                table.insert(self.damageIndicators, DamageIndicator(other.attackDamage, self))
             end
         end
     end)
@@ -190,6 +190,7 @@ function Player:updateAttack(dt)
         self.attacking = true
 
         Timer.after(self.weapon.attackSpeed * 0.75, function()
+            if not self.weapon then return end
             self.weapon:onAttack(self.attackAngle)
         end)
     end

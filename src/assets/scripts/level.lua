@@ -3,6 +3,9 @@ local Vector = require 'libs.vector'
 local STI = require 'libs.sti'
 local Anim8 = require 'libs.anim8'
 
+local Crate = require 'assets.scripts.interactables.Crate'
+local Door = require 'assets.scripts.interactables.Door'
+
 local Level = Class:extend()
 
 function Level:new(world)
@@ -37,8 +40,8 @@ function Level:new(world)
     self.images = {
         fountain_blue = love.graphics.newImage('assets/images/animation/fountain_blue.png'),
         fountain_red  = love.graphics.newImage('assets/images/animation/fountain_red.png'),
-        door          = love.graphics.newImage('assets/images/animation/door_open.png'),
-        door_arch     = love.graphics.newImage('assets/images/animation/door_arch.png')
+        door_open     = love.graphics.newImage('assets/images/animation/door_open.png'),
+        door_arch     = love.graphics.newImage('assets/images/animation/door_arch.png'),
     }
 
     self.animations = {
@@ -47,6 +50,14 @@ function Level:new(world)
                 self.images.fountain_blue:getWidth(),
                 self.images.fountain_blue:getHeight())('1-2', 1), 0.15)
     }
+
+    self.interactables = {}
+    self:loadInteractables()
+end
+
+function Level:isFloor(x, y)
+    local tile = self.map.layers['Floor'].data[y + 1][x + 1]
+    return tile and tile.properties and tile.properties.isFloor
 end
 
 function Level:update(dt)
@@ -54,16 +65,34 @@ function Level:update(dt)
     self.animations.fountain:update(dt)
 end
 
-function Level:drawDoors()
-    for _, obj in pairs(self.map.layers['Interact'].objects) do
-        if obj.name == 'door' then
-            local x, y = obj.x, obj.y - 12
-            local image = self.images.door
-
-            if image then
-                love.graphics.draw(image, x, y)
-            end
+function Level:removeInteractable(object)
+    for i, obj in pairs(self.interactables) do
+        if obj == object then
+            table.remove(self.interactables, i)
+            break
         end
+    end
+end
+
+function Level:loadInteractables()
+    for _, obj in pairs(self.map.layers['Interact'].objects) do
+        local interactable
+
+        if obj.name == 'door' then
+            local x, y = obj.x, obj.y
+            interactable = Door(x, y)
+        elseif obj.name == 'crate' then
+            local x, y = obj.x, obj.y
+            interactable = Crate(x, y, self)
+        end
+
+        table.insert(self.interactables, interactable)
+    end
+end
+
+function Level:drawInteractables()
+    for _, obj in pairs(self.interactables) do
+        obj:draw()
     end
 end
 
@@ -97,7 +126,7 @@ function Level:draw()
     self.map:drawLayer(self.map.layers['Decoration'])
 
     self:drawAnimations()
-    self:drawDoors()
+    self:drawInteractables()
 end
 
 function Level:drawFog()

@@ -12,6 +12,8 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
+    debug     = true
+
     GameState = CharacterSelection()
 
     Cursor    = CustomCursor(2)
@@ -23,7 +25,7 @@ function love.load()
 end
 
 function love.update(dt)
-    GameState:update(dt)    
+    GameState:update(dt)
     Cursor:update()
 
     Mouse = Vector(love.mouse.getX(), love.mouse.getY())

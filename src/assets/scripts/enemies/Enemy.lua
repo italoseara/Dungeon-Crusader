@@ -2,6 +2,7 @@ local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
 local Anim8 = require 'libs.anim8'
 local Timer = require 'libs.timer'
+local AStar = require 'libs.astar'
 
 local DamageIndicator = require 'assets.scripts.ui.DamageIndicator'
 
@@ -13,15 +14,6 @@ local Direction = {
 }
 
 function Enemy:new(x, y, game)
-    -- Set by child:
-    -- self.name
-    -- self.width
-    -- self.height
-    -- self.maxHealth
-    -- self.attackSpeed
-    -- self.attackDamage
-    -- self.speed
-
     self.type = 'enemy'
 
     -- Health
@@ -34,6 +26,8 @@ function Enemy:new(x, y, game)
     -- Game
     self.game = game
     self.world = game.world
+    self.level = game.level
+    self.player = game.player
 
     -- Movement
     self.position = Vector(x, y)
@@ -84,10 +78,68 @@ function Enemy:new(x, y, game)
 
     self.walkingDirection = Direction.RIGHT
     self.currentAnimation = self.animation.idle
+
+    -- Pathfinding
+    self.path = nil
+    self.lastSearch = 0
+    self.nextPosition = nil
+    self.sawPlayer = false
+end
+
+function Enemy:searchPath()
+    local map = self.level.map
+
+    local start = {}
+    local goal = {}
+    start.x, start.y = map:convertPixelToTile(self.position.x, self.position.y)
+    goal.x, goal.y = map:convertPixelToTile(self.player.position.x, self.player.position.y)
+
+    goal.x = math.ceil(goal.x - 0.5)
+    goal.y = math.ceil(goal.y - 0.5)
+    start.x = math.ceil(start.x)
+    start.y = math.ceil(start.y)
+
+    self.path = AStar:find(map.width, map.height, start, goal, function(x, y)
+        return self.level:isFloor(x, y)
+    end, false, false)
 end
 
 function Enemy:updateMovement(dt)
+    if not self.sawPlayer then 
+        if (self.position - self.player.position):len() < self.viewDistance then
+            self.sawPlayer = true
+        end
 
+        return
+    end
+
+    if not self.path or (self.position - self.player.position):len() < 20 then
+        self.nextPosition = nil
+        local direction = (self.player.position - self.position):normalized()
+        self.velocity = self.velocity + direction * self.speed * dt
+    elseif self.path then
+        local next = self.path[1]
+
+        if next then
+            self.nextPosition = Vector(
+                next.x * self.level.map.tilewidth - self.level.map.tilewidth / 2,
+                next.y * self.level.map.tileheight - self.level.map.tileheight / 2
+            )
+
+            local direction = (self.nextPosition - self.position):normalized()
+            self.velocity = self.velocity + direction * self.speed * dt
+
+            if (self.nextPosition - self.position):len() < 10 then
+                table.remove(self.path, 1)
+            end
+        end
+    end
+
+    -- Search for path
+    if love.timer.getTime() - self.lastSearch > 0.2 then
+        self:searchPath()
+        self.lastSearch = love.timer.getTime()
+    end
 end
 
 function Enemy:updatePhysics(dt)
@@ -98,7 +150,7 @@ function Enemy:updatePhysics(dt)
 end
 
 function Enemy:updateAnimations(dt)
-    if self.velocity:len() > 50 then
+    if self.velocity:len() > 20 then
         self.currentAnimation = self.animation.run
 
         -- Change direction based on velocity
@@ -124,6 +176,7 @@ function Enemy:takeDamage(damage, angle, knockback)
         self:die()
     end
 
+    if self.dead then return end
     table.insert(self.damageIndicators, DamageIndicator(damage, self))
 end
 
@@ -132,7 +185,7 @@ function Enemy:die()
     self.dead = true
 
     Timer.after(5, function()
-        self.collider:destroy()
+        if self.collider.body then self.collider:destroy() end
         self.game:removeEnemy(self)
     end)
 end
@@ -184,9 +237,45 @@ function Enemy:drawHit()
     end
 end
 
+function Enemy:drawPath()
+    if self.path then
+        local map = self.level.map
+        local tileSize = map.tilewidth
+        local tileoffset = Vector(map.tilewidth / 2, map.tileheight / 2)
+
+        love.graphics.setColor(1, 0, 0)
+        for i = 1, #self.path - 1 do
+            local x1 = self.path[i].x * tileSize - tileoffset.x
+            local y1 = self.path[i].y * tileSize - tileoffset.y
+            local x2 = self.path[i + 1].x * tileSize - tileoffset.x
+            local y2 = self.path[i + 1].y * tileSize - tileoffset.y
+            love.graphics.line(x1, y1, x2, y2)
+        end
+        love.graphics.setColor(1, 1, 1)
+    end
+
+    -- draw next position
+    if self.nextPosition then
+        love.graphics.setColor(0, 1, 0)
+        love.graphics.circle("fill", self.nextPosition.x, self.nextPosition.y, 2)
+        love.graphics.setColor(1, 1, 1)
+    end
+end
+
+function Enemy:drawViewDistance()
+    love.graphics.setColor(1, 0, 0, 0.2)
+    love.graphics.circle("fill", self.position.x, self.position.y, self.viewDistance)
+    love.graphics.setColor(1, 1, 1)
+end
+
 function Enemy:draw()
     self:drawBody()
     self:drawHit()
+
+    if debug then
+        self:drawPath()
+        self:drawViewDistance()
+    end
 end
 
 function Enemy:drawUI()
