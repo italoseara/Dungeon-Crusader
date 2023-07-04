@@ -27,7 +27,13 @@ function Player:new(x, y, game, characterID)
     -- Health
     self.maxHealth = 200
     self.health = self.maxHealth
+    self.healthRegen = 1
     self.dead = false
+
+    -- Mana
+    self.maxMana = 100
+    self.mana = self.maxMana
+    self.manaRegen = 1
 
     -- Damage
     self.lastHit = 0
@@ -84,6 +90,7 @@ function Player:new(x, y, game, characterID)
         idle  = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_idle.png'),
         run   = love.graphics.newImage('assets/images/animation/' .. characterID .. '/' .. characterID .. '_run.png'),
         heart = love.graphics.newImage('assets/images/ui/ui_heart_full.png'),
+        mana  = love.graphics.newImage('assets/images/ui/ui_mana_ball.png'),
     }
 
     self.animation = {
@@ -122,7 +129,7 @@ function Player:new(x, y, game, characterID)
     -- Pickup
     self.lastPickup = 0
 
-    -- Health regeneration
+    -- Regeneration
     Timer.every(0.5, function()
         if love.timer.getTime() - self.lastHit < 10 or
             love.timer.getTime() - self.attackTimer < 10 or
@@ -131,13 +138,19 @@ function Player:new(x, y, game, characterID)
         end
 
         if self.health < self.maxHealth then
-            self.health = self.health + 1
-            table.insert(self.damageIndicators, DamageIndicator(1, self, { 0, 1, 0, 1 }))
+            self.health = self.health + self.healthRegen
+            table.insert(self.damageIndicators, DamageIndicator(self.healthRegen, self, { 0, 1, 0, 1 }))
+        end
+
+        if self.mana < self.maxMana then
+            self.mana = self.mana + self.manaRegen
+            table.insert(self.damageIndicators, DamageIndicator(self.manaRegen, self, { 0, 0, 1, 1 }))
         end
     end)
 end
 
 function Player:die()
+    self.game.state = 'over'
     self.health = 0
     self.dead = true
 
@@ -237,9 +250,12 @@ function Player:update(dt)
 
     if self.dead then return end
 
-    self:updateMovement(dt)
     self:updateAnimations(dt)
+
+    if self.game.state ~= 'running' then return end
+
     self:updateAttack(dt)
+    self:updateMovement(dt)
     self:dropWeapon(dt)
 end
 
@@ -300,11 +316,20 @@ end
 
 function Player:drawHealth()
     love.graphics.draw(self.images.heart,
-        10, love.graphics.getHeight() - (self.images.heart:getHeight() * 2) - 15,
+        10, love.graphics.getHeight() - self.images.heart:getHeight() * 2 - 15,
         0, 2, 2)
 
     local text = love.graphics.newText(Fonts.big, tostring(self.health))
     love.graphics.draw(text, 45, love.graphics.getHeight() - text:getHeight() - 10)
+end
+
+function Player:drawMana()
+    love.graphics.draw(self.images.mana,
+        100, love.graphics.getHeight() - self.images.mana:getHeight() * 2 - 15,
+        0, 2, 2)
+
+    local text = love.graphics.newText(Fonts.big, tostring(self.mana))
+    love.graphics.draw(text, 135, love.graphics.getHeight() - text:getHeight() - 10)
 end
 
 function Player:drawHealthHit()
@@ -325,6 +350,7 @@ function Player:drawUI()
     self:drawDamageIndicators()
     self:drawHealth()
     self:drawHealthHit()
+    self:drawMana()
 end
 
 return Player

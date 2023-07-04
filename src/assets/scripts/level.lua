@@ -8,10 +8,15 @@ local Door = require 'assets.scripts.interactables.Door'
 
 local Level = Class:extend()
 
-function Level:new(game)
+function Level:new(game, id)
+    self.id = id
+
     -- Load map
     love.graphics.setBackgroundColor(0.133, 0.133, 0.133)
-    self.map = STI('assets/maps/level1.lua')
+    self.map = STI('assets/maps/level' .. self.id .. '.lua')
+
+    -- Run Timer
+    self.timer = 0
 
     -- Set spawn
     self.spawn = Vector(0, 0)
@@ -64,6 +69,9 @@ end
 function Level:update(dt)
     self.map:update(dt)
     self.animations.fountain:update(dt)
+
+    if self.game.state ~= 'running' then return end
+    self.timer = self.timer + dt
 end
 
 function Level:removeInteractable(object)
@@ -137,8 +145,30 @@ function Level:drawFog()
     love.graphics.setShader()
 end
 
+function Level:getTimer()
+    -- Convert time to minutes and seconds
+    local minutes = math.floor(self.timer / 60)
+    local seconds = math.floor(self.timer % 60)
+    local milliseconds = math.floor((self.timer * 100) % 100)
+
+    -- Format time
+    return string.format('%02d:%02d:%02d', minutes, seconds, milliseconds)
+end
+
+function Level:drawTimer()
+    local time = self:getTimer()
+    local text = love.graphics.newText(Fonts.big, time)
+
+    local x = love.graphics.getWidth() / 2 - text:getWidth() / 2
+    local y = 10
+
+    -- Draw time
+    love.graphics.draw(text, x, y)
+end
+
 function Level:drawUI()
     self:drawFog()
+    self:drawTimer()
 end
 
 return Level

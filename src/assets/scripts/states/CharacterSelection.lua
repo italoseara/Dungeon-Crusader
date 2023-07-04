@@ -1,8 +1,6 @@
 local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
-local Anim8 = require 'libs.anim8'
 
-local Game = require 'assets.scripts.states.Game'
 local CharacterButton = require 'assets.scripts.ui.CharacterButton'
 
 local CharacterSelection = Class:extend()
@@ -62,7 +60,7 @@ function CharacterSelection:update(dt)
         local t = love.timer.getTime() - self.timer
 
         if t > self.delay then
-            GameState = Game(self.selected)
+            GameState = require 'assets.scripts.states.Game' (self.selected)
         end
     end
 end

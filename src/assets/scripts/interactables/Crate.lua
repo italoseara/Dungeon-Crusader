@@ -3,6 +3,8 @@ local Vector = require 'libs.vector'
 
 local BigHealingPotion = require 'assets.scripts.potions.BigHealing'
 local HealingPotion = require 'assets.scripts.potions.Healing'
+local BigManaPotion = require 'assets.scripts.potions.BigMana'
+local ManaPotion = require 'assets.scripts.potions.Mana'
 
 local Crate = Class:extend()
 
@@ -30,18 +32,22 @@ function Crate:new(x, y, game, level)
     end)
 end
 
-function Crate:dropPotion()
+function Crate:getRandomPotion()
     local random = math.random(1, 100)
 
-    local potion = nil
-
-    if random <= 75 then
-        potion = HealingPotion
+    if random <= 50 then
+        return HealingPotion
+    elseif random <= 75 then
+        return BigHealingPotion
+    elseif random <= 90 then
+        return ManaPotion
     else
-        potion = BigHealingPotion
+        return BigManaPotion
     end
+end
 
-    self.game:dropItem(potion,
+function Crate:dropPotion()
+    self.game:dropItem(self:getRandomPotion(),
         self.position.x + self.width / 2,
         self.position.y + self.height / 2)
 end
