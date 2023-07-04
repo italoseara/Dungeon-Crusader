@@ -1,29 +1,29 @@
+local Vector = require 'libs.vector'
+
 local Weapon = require 'assets.scripts.weapons.Weapon'
 
-local MagicStaff = Weapon:extend()
+local ThrowingKnife = Weapon:extend()
 
-function MagicStaff:new(game)
+function ThrowingKnife:new(game)
     -- Stats
     self.attackRadius = 4
-    self.attackDamage = 15
-    self.attackSpeed = 0.5
+    self.attackDamage = 10
+    self.attackSpeed = 0.75
     self.attackKnockback = 50
-    self.projectileSpeed = 200
-    self.manaCost = 5
+    self.projectileSpeed = 300
 
     -- Image
-    self.path = 'assets/images/weapons/weapon_red_magic_staff.png'
-    self.projectile = love.graphics.newImage('assets/images/weapons/weapon_spell.png')
+    self.path = 'assets/images/weapons/weapon_knife.png'
+    self.projectile = love.graphics.newImage('assets/images/weapons/weapon_knife.png')
 
-    MagicStaff.super.new(self, game)
+    ThrowingKnife.super.new(self, game)
 end
 
-function MagicStaff:onAttack(angle)
-    -- Spend mana
-    if not self.game.player:spendMana(self.manaCost) then return end
+function ThrowingKnife:onAttack(angle)
+    local player = self.game.player
 
-    local x = self.game.player.position.x + math.cos(angle) * 5
-    local y = self.game.player.position.y + math.sin(angle) * 5
+    local x = player.position.x + math.cos(angle) * 5
+    local y = player.position.y + math.sin(angle) * 5
 
     local collider = self.game.world:newCircleCollider(x, y, self.attackRadius)
 
@@ -43,7 +43,7 @@ function MagicStaff:onAttack(angle)
         contact:setEnabled(false)
     end)
 
-    self.game:addProjectile(collider, self.projectile, 0.4)
+    self.game:addProjectile(collider, self.projectile, 0.7, angle + math.rad(90))
 end
 
-return MagicStaff
+return ThrowingKnife

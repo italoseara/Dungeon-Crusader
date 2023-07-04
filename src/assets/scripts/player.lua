@@ -3,11 +3,7 @@ local Vector = require 'libs.vector'
 local Anim8 = require 'libs.anim8'
 local Timer = require 'libs.timer'
 
-local Sword = require 'assets.scripts.weapons.Sword'
-local AnimeSword = require 'assets.scripts.weapons.AnimeSword'
-local MagicStaff = require 'assets.scripts.weapons.MagicStaff'
-local Bow = require 'assets.scripts.weapons.Bow'
-
+local CharacterStats = require 'assets.scripts.CharacterStats'
 local DamageIndicator = require 'assets.scripts.ui.DamageIndicator'
 
 local Player = Class:extend()
@@ -17,59 +13,8 @@ local Direction = {
     RIGHT = 1
 }
 
-local Characters = {
-    knight_m = {
-        weapon = Sword,
-        maxHealth = 200,
-        maxMana = 100,
-        speed = 800,
-    },
-    wizard_m = {
-        weapon = MagicStaff,
-        maxHealth = 100,
-        maxMana = 200,
-        speed = 800,
-    },
-    lizard_m = {
-        weapon = Bow,
-        maxHealth = 150,
-        maxMana = 150,
-        speed = 900,
-    },
-    dwarf_m = {
-        weapon = AnimeSword,
-        maxHealth = 250,
-        maxMana = 50,
-        speed = 600,
-    },
-    knight_f = {
-        weapon = Sword,
-        maxHealth = 200,
-        maxMana = 100,
-        speed = 800,
-    },
-    wizard_f = {
-        weapon = MagicStaff,
-        maxHealth = 100,
-        maxMana = 200,
-        speed = 800,
-    },
-    lizard_f = {
-        weapon = Bow,
-        maxHealth = 150,
-        maxMana = 150,
-        speed = 900,
-    },
-    dwarf_f = {
-        weapon = AnimeSword,
-        maxHealth = 250,
-        maxMana = 50,
-        speed = 600,
-    },
-}
-
 function Player:new(x, y, game, characterID)
-    local character = Characters[characterID]
+    local character = CharacterStats[characterID]
 
     -- Game
     self.game = game
@@ -326,13 +271,13 @@ function Player:update(dt)
 end
 
 function Player:getWeaponAngle()
-    if self.attacking then
-        local t = love.timer.getTime() - self.attackTimer
-        return self.weapon:getAttackAngle(t, self.attackAngle, self.mouseDirection)
-    end
-
     local screenPos = Vector(self.camera:cameraCoords(self.position.x, self.position.y + 4))
     local angle = math.atan2(Mouse.y - screenPos.y + self.height / 2, Mouse.x - screenPos.x)
+
+    if self.attacking then
+        local t = love.timer.getTime() - self.attackTimer
+        return self.weapon:getAttackAngle(t, self.attackAngle, self.mouseDirection, angle)
+    end
 
     return angle
 end

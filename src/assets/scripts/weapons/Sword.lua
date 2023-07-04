@@ -6,7 +6,7 @@ function Sword:new(game)
     -- Stats
     self.attackRange = 10
     self.attackRadius = 10
-    self.attackDamage = 10
+    self.attackDamage = 15
     self.attackSpeed = 0.5
     self.attackKnockback = 150
 

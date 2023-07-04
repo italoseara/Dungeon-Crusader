@@ -17,7 +17,7 @@ function Weapon:drop(x, y)
     self.game:dropItem(self.__index, x, y)
 end
 
-function Weapon:getAttackAngle(t, initial, direction)
+function Weapon:getAttackAngle(t, initial, direction, mouseAngle)
     return initial + (4 * Ease.swing(t / self.attackSpeed)) * -direction
 end
 

@@ -1,3 +1,5 @@
+local Vector = require 'libs.vector'
+
 local Weapon = require 'assets.scripts.weapons.Weapon'
 
 local Bow = Weapon:extend()
@@ -6,7 +8,7 @@ function Bow:new(game)
     -- Stats
     self.attackRadius = 4
     self.attackDamage = 10
-    self.attackSpeed = 0.5
+    self.attackSpeed = 0.75
     self.attackKnockback = 50
     self.projectileSpeed = 300
 
@@ -17,17 +19,22 @@ function Bow:new(game)
     Bow.super.new(self, game)
 end
 
-function Bow:getAttackAngle(t, initial, direction)
-    return initial
+function Bow:getAttackAngle(t, initial, direction, mouseAngle)
+    return mouseAngle
 end
 
 function Bow:onAttackBegin(angle)
     self.image = love.graphics.newImage('assets/images/weapons/weapon_bow_2.png')
 end
 
-function Bow:onAttack(angle)
-    local x = self.game.player.position.x + math.cos(angle) * 5
-    local y = self.game.player.position.y + math.sin(angle) * 5
+function Bow:onAttack(_)
+    local player = self.game.player
+
+    local screenPos = Vector(player.camera:cameraCoords(player.position.x, player.position.y + 4))
+    local angle = math.atan2(Mouse.y - screenPos.y + player.height / 2, Mouse.x - screenPos.x)
+
+    local x = player.position.x + math.cos(angle) * 5
+    local y = player.position.y + math.sin(angle) * 5
 
     local collider = self.game.world:newCircleCollider(x, y, self.attackRadius)
 
