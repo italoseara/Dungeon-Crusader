@@ -12,7 +12,7 @@ function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     math.randomseed(os.time())
 
-    debug     = true
+    debug     = false
 
     GameState = CharacterSelection()
 

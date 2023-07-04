@@ -8,7 +8,7 @@ local Door = require 'assets.scripts.interactables.Door'
 
 local Level = Class:extend()
 
-function Level:new(world)
+function Level:new(game)
     -- Load map
     love.graphics.setBackgroundColor(0.133, 0.133, 0.133)
     self.map = STI('assets/maps/level1.lua')
@@ -20,7 +20,8 @@ function Level:new(world)
     self.spawn.y = self.spawn.y + 8
 
     -- Create walls
-    self.world = world
+    self.game = game
+    self.world = game.world
 
     self.walls = {}
     if self.map.layers['Collide'] then
@@ -83,7 +84,7 @@ function Level:loadInteractables()
             interactable = Door(x, y)
         elseif obj.name == 'crate' then
             local x, y = obj.x, obj.y
-            interactable = Crate(x, y, self)
+            interactable = Crate(x, y, self.game, self)
         end
 
         table.insert(self.interactables, interactable)

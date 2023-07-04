@@ -33,11 +33,6 @@ function Item:update(dt)
     local distance = self.position:dist(self.player.position)
 
     if distance < 15 then
-        if self.player.weapon then
-            -- Swap weapons
-            self.player.weapon:drop(self.player.position.x, self.player.position.y)
-        end
-
         self.item:onPickup(self.player)
         self.game:removeItem(self)
         self.player.lastPickup = love.timer.getTime()

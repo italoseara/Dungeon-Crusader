@@ -4,9 +4,13 @@ local Timer = require 'libs.timer'
 
 local DamageIndicator = Class:extend()
 
-function DamageIndicator:new(damage, entity)
+function DamageIndicator:new(damage, entity, color)
     self.font = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 24)
-    self.text = love.graphics.newText(self.font, '-' .. damage)
+
+    if damage > 0 then damage = '+' .. damage end
+    self.text = love.graphics.newText(self.font, damage)
+
+    self.color = color or { 1, 0, 0, 1 }
 
     self.entity = entity
     self.camera = entity.game.camera
@@ -24,7 +28,7 @@ end
 function DamageIndicator:draw()
     local screenPosition = Vector(self.camera:cameraCoords(self.position.x, self.position.y - self.entity.height / 2))
 
-    love.graphics.setColor(1, 0, 0, 1)
+    love.graphics.setColor(self.color)
     love.graphics.draw(self.text,
         screenPosition.x,
         screenPosition.y - 15 * Ease.outCubic(love.timer.getTime() - self.timer))

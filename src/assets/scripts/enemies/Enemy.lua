@@ -105,7 +105,7 @@ function Enemy:searchPath()
 end
 
 function Enemy:updateMovement(dt)
-    if not self.sawPlayer then 
+    if not self.sawPlayer then
         if (self.position - self.player.position):len() < self.viewDistance then
             self.sawPlayer = true
         end
@@ -177,7 +177,7 @@ function Enemy:takeDamage(damage, angle, knockback)
     end
 
     if self.dead then return end
-    table.insert(self.damageIndicators, DamageIndicator(damage, self))
+    table.insert(self.damageIndicators, DamageIndicator(-damage, self))
 end
 
 function Enemy:die()

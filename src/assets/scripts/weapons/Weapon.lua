@@ -22,6 +22,11 @@ function Weapon:getAttackAngle(t, initial, direction)
 end
 
 function Weapon:onPickup(player)
+    if player.weapon then
+        -- Swap weapons
+        player.weapon:drop(player.position.x, player.position.y)
+    end
+
     player.weapon = self
 end
 

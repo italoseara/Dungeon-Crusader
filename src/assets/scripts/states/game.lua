@@ -29,7 +29,7 @@ function Game:new(characterID)
     self.world:addCollisionClass('Crate')
     self.world:addCollisionClass('Wall')
 
-    self.level = Level(self.world)
+    self.level = Level(self)
 
     -- Player
     self.player = Player(self.level.spawn.x, self.level.spawn.y, self, characterID)

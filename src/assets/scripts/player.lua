@@ -62,7 +62,7 @@ function Player:new(x, y, game, characterID)
                 self.velocity = self.velocity + direction:normalized() * 250
 
                 if self.dead then return end
-                table.insert(self.damageIndicators, DamageIndicator(other.attackDamage, self))
+                table.insert(self.damageIndicators, DamageIndicator(-other.attackDamage, self))
             end
         end
     end)
