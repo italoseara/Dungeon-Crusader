@@ -25,8 +25,8 @@ function Crate:new(x, y, game, level)
             self.level:removeInteractable(self)
             self:dropPotion()
             collider_1:destroy()
+            contact:setEnabled(false)
         end
-        contact:setEnabled(false)
     end)
 end
 
