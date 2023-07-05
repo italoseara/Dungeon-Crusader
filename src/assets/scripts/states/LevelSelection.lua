@@ -1,29 +1,25 @@
 local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
-local Anim8 = require 'libs.anim8'
 
-local CharacterButton = require 'assets.scripts.ui.CharacterButton'
+local LevelButton = require 'assets.scripts.ui.LevelButton'
 
-local CharacterSelection = Class:extend()
+local LevelSelection = Class:extend()
 
 local State = {
     MENU = 1,
     TRANSITION = 2
 }
 
-function CharacterSelection:new(levelID)
-    self.levelID = levelID
-
+function LevelSelection:new()
     self.background = love.graphics.newImage('assets/images/menu.png')
     self.offset = Vector(0, 0)
 
     self.selected = nil
     self.state = State.MENU
     self.timer = 0
-    self.delay = 1
+    self.delay = 0.2
 
     local center = Vector(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2 + 50)
-    local margin = Vector(100, 100)
 
     local function callback(id)
         if self.state == State.TRANSITION then return end
@@ -34,18 +30,11 @@ function CharacterSelection:new(levelID)
     end
 
     self.cards = {
-        CharacterButton('knight_m', 'Knight (M)', center.x - 3 * margin.x, center.y - margin.y, callback),
-        CharacterButton('wizard_m', 'Wizard (M)', center.x - margin.x, center.y - margin.y, callback),
-        CharacterButton('lizard_m', 'Lizard (M)', center.x + margin.x, center.y - margin.y, callback),
-        CharacterButton('dwarf_m', 'Dwarf (M)', center.x + 3 * margin.x, center.y - margin.y, callback),
-        CharacterButton('knight_f', 'Knight (F)', center.x - 3 * margin.x, center.y + margin.y, callback),
-        CharacterButton('wizard_f', 'Wizard (F)', center.x - margin.x, center.y + margin.y, callback),
-        CharacterButton('lizard_f', 'Lizard (F)', center.x + margin.x, center.y + margin.y, callback),
-        CharacterButton('dwarf_f', 'Dwarf (F)', center.x + 3 * margin.x, center.y + margin.y, callback)
+        LevelButton(1, center.x, center.y, callback),
     }
 end
 
-function CharacterSelection:update(dt)
+function LevelSelection:update(dt)
     -- Move the background around according to the mouse position
     local center = Vector(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
     local direction = Mouse - center
@@ -63,12 +52,12 @@ function CharacterSelection:update(dt)
         local t = love.timer.getTime() - self.timer
 
         if t > self.delay then
-            GameState = require 'assets.scripts.states.Game' (self.selected, self.levelID)
+            GameState = require 'assets.scripts.states.CharacterSelection' (self.selected)
         end
     end
 end
 
-function CharacterSelection:draw()
+function LevelSelection:draw()
     -- Draw the background from the center
     love.graphics.draw(self.background,
         love.graphics.getWidth() / 2 - self.background:getWidth() / 2 + self.offset.x,
@@ -79,7 +68,7 @@ function CharacterSelection:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- Draw the logo above the buttons
-    local text = love.graphics.newText(Fonts.big2, 'Select your character')
+    local text = love.graphics.newText(Fonts.big2, 'Select the level')
     love.graphics.draw(text,
         love.graphics.getWidth() / 2 - text:getWidth() / 2,
         love.graphics.getHeight() / 2 - text:getHeight() / 2 - 200)
@@ -99,4 +88,4 @@ function CharacterSelection:draw()
     end
 end
 
-return CharacterSelection
+return LevelSelection

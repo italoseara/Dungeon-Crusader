@@ -1,31 +1,27 @@
 local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
-local Anim8 = require 'libs.anim8'
 
 local CharacterButton = Class:extend()
 
-function CharacterButton:new(id, label, x, y, callback)
+function CharacterButton:new(id, x, y, callback)
     self.id = id
+
+    -- Spacing
+    self.margin = 10
+    self.padding = 10
 
     -- Text
     self.color = { 1, 1, 1, 1 }
-    self.text = love.graphics.newText(Fonts.medium, label)
+    self.text = love.graphics.newText(Fonts.medium, 'Level ' .. id)
 
-    -- Animation
-    self.scale = 4
-    self.frames = 4
-    self.image = love.graphics.newImage('assets/images/animation/' .. id .. '/' .. id .. '_idle.png')
-    local grid = Anim8.newGrid(
-        self.image:getWidth() / self.frames,
-        self.image:getHeight(),
-        self.image:getWidth(),
-        self.image:getHeight())
-    self.animation = Anim8.newAnimation(grid('1-' .. self.frames, 1), 0.1)
+    -- Level
+    self.scale = 0.3
+    self.image = love.graphics.newImage('assets/maps/previews/level' .. id .. '.png')
 
     -- Position
     self.dimentions = Vector(
-        math.max(self.text:getWidth(), self.image:getWidth() / self.frames * self.scale),
-        (self.text:getHeight() + self.image:getHeight() * self.scale)
+        math.max(self.text:getWidth(), self.image:getWidth() * self.scale),
+        (self.text:getHeight() + self.image:getHeight() * self.scale + self.margin)
     )
 
     self.position = Vector(x - self.dimentions.x / 2, y - self.dimentions.y / 2)
@@ -53,10 +49,8 @@ function CharacterButton:update(dt)
         end
 
         self:changeColor(1, 0, 0, 1, dt)
-        self.animation:update(dt)
     else
         self:changeColor(1, 1, 1, 1, dt)
-        self.animation:gotoFrame(1)
     end
 end
 
@@ -68,17 +62,26 @@ function CharacterButton:changeColor(r, g, b, a, dt)
 end
 
 function CharacterButton:draw()
-    -- Draw the animation centered
-    self.animation:draw(self.image,
-        self.position.x + self.dimentions.x / 2 - self.image:getWidth() / self.frames * self.scale / 2,
-        self.position.y,
+    -- Draw the map
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(self.image,
+        self.position.x + self.dimentions.x / 2 - self.image:getWidth() * self.scale / 2,
+        self.position.y + self.dimentions.y / 2 - self.image:getHeight() * self.scale / 2,
         0, self.scale, self.scale)
 
     -- Draw the text centered below the animation
     love.graphics.setColor(self.color)
     love.graphics.draw(self.text,
         self.position.x + self.dimentions.x / 2 - self.text:getWidth() / 2,
-        self.position.y + self.dimentions.y - self.text:getHeight())
+        self.position.y + self.dimentions.y - self.text:getHeight() + self.margin)
+
+    -- Draw the bounding box
+    love.graphics.setLineWidth(5)
+    love.graphics.rectangle('line',
+        self.position.x - self.padding,
+        self.position.y - self.padding,
+        self.dimentions.x + self.padding * 2,
+        self.dimentions.y + self.padding * 2)
     love.graphics.setColor(1, 1, 1, 1)
 end
 

@@ -2,7 +2,7 @@ local Class = require 'libs.classic'
 local Vector = require 'libs.vector'
 local TextButton = require 'assets.scripts.ui.TextButton'
 
-local CharacterSelection = require 'assets.scripts.states.CharacterSelection'
+local LevelSelection = require 'assets.scripts.states.LevelSelection'
 
 local Menu = Class:extend()
 
@@ -55,7 +55,7 @@ function Menu:update(dt)
         local t = love.timer.getTime() - self.timer
 
         if t > self.delay then
-            GameState = CharacterSelection()
+            GameState = LevelSelection()
         end
     end
 end

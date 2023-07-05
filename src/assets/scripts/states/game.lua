@@ -10,8 +10,8 @@ local Item = require 'assets.scripts.Item'
 
 local Game = Class:extend()
 
-function Game:new(characterID)
-    -- Camera
+function Game:new(characterID, levelID)
+    -- Camer
     self.camera = Camera(0, 0, 4)
     self.camera.smoother = Camera.smooth.damped(10)
 
@@ -32,13 +32,15 @@ function Game:new(characterID)
     self.world:addCollisionClass('Crate')
     self.world:addCollisionClass('Chest')
     self.world:addCollisionClass('Wall')
+    self.world:addCollisionClass('Void')
     self.world:addCollisionClass('Weapon', { ignores = { 'Weapon', 'Player' } })
     self.world:addCollisionClass('Projectile', { ignores = { 'Weapon', 'Player' } })
 
-    self.level = Level(self, 1)
+    self.level = Level(self, levelID)
 
     -- Player
-    self.player = Player(self.level.spawn.x, self.level.spawn.y, self, characterID)
+    local spawn = self.level:getSpawn()
+    self.player = Player(spawn.x, spawn.y, self, characterID)
     self.camera:lookAt(self.player.position.x, self.player.position.y)
 
     -- State

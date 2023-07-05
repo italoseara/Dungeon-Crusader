@@ -27,11 +27,6 @@ function Level:new(game, id)
     -- Run Timer
     self.timer = 0
 
-    -- Set spawn
-    self.spawn = Vector(0, 0)
-    self.spawn.x, self.spawn.y = self.map:convertTileToPixel(18, 31)
-    self.spawn = self.spawn + Vector(8, 8)
-
     -- Create walls
     self.game = game
     self.world = game.world
@@ -42,6 +37,18 @@ function Level:new(game, id)
             local x, y, w, h = obj.x, obj.y, obj.width, obj.height
             local wall = self.world:newRectangleCollider(x, y, w, h)
             wall:setCollisionClass('Wall')
+            wall:setType('static')
+            wall:setFriction(0)
+            wall:setRestitution(0)
+            wall:setObject(obj)
+            table.insert(self.walls, wall)
+        end
+    end
+    if self.map.layers['Void'] then
+        for _, obj in pairs(self.map.layers['Void'].objects) do
+            local x, y, w, h = obj.x, obj.y, obj.width, obj.height
+            local wall = self.world:newRectangleCollider(x, y, w, h)
+            wall:setCollisionClass('Void')
             wall:setType('static')
             wall:setFriction(0)
             wall:setRestitution(0)
@@ -68,6 +75,11 @@ function Level:new(game, id)
     self.interactables = {}
     self:loadInteractables()
     self:spawnEnemies()
+end
+
+function Level:getSpawn()
+    local spawn = self.map.layers['Spawn'].objects[1]
+    return Vector(spawn.x + 8, spawn.y + 8)
 end
 
 function Level:spawnEnemies()
