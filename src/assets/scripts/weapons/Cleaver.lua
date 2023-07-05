@@ -4,11 +4,11 @@ local Cleaver = Weapon:extend()
 
 function Cleaver:new(game)
     -- Stats
-    self.attackRange = 10
-    self.attackRadius = 12
-    self.attackDamage = 35
+    self.attackRange = 12
+    self.attackRadius = 15
+    self.attackDamage = 40
     self.attackSpeed = 1
-    self.attackKnockback = 150
+    self.attackKnockback = 170
 
     -- Image
     self.path = 'assets/images/weapons/weapon_cleaver.png'
