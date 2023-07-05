@@ -30,13 +30,13 @@ function Player:new(x, y, game, characterID)
     -- Health
     self.maxHealth = character.maxHealth
     self.health = self.maxHealth
-    self.healthRegen = 1
+    self.healthRegen = 5
     self.dead = false
 
     -- Mana
     self.maxMana = character.maxMana
     self.mana = self.maxMana
-    self.manaRegen = 5
+    self.manaRegen = 10
 
     -- Damage
     self.lastHit = 0
@@ -129,8 +129,8 @@ function Player:new(x, y, game, characterID)
     self.attackTimer = 0
     self.attackAngle = 0
 
-    -- Pickup
-    self.lastPickup = 0
+    -- Interaction
+    self.lastInteraction = 0
 
     -- Regeneration
     Timer.every(0.5, function()
@@ -322,7 +322,7 @@ function Player:drawHealth()
         10, love.graphics.getHeight() - self.images.heart:getHeight() * 2 - 15,
         0, 2, 2)
 
-    local text = love.graphics.newText(Fonts.big, tostring(self.health))
+    local text = love.graphics.newText(Fonts.medium, tostring(self.health))
     love.graphics.draw(text, 45, love.graphics.getHeight() - text:getHeight() - 10)
 end
 
@@ -331,7 +331,7 @@ function Player:drawMana()
         100, love.graphics.getHeight() - self.images.mana:getHeight() * 2 - 15,
         0, 2, 2)
 
-    local text = love.graphics.newText(Fonts.big, tostring(self.mana))
+    local text = love.graphics.newText(Fonts.medium, tostring(self.mana))
     love.graphics.draw(text, 135, love.graphics.getHeight() - text:getHeight() - 10)
 end
 

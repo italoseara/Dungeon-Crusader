@@ -18,17 +18,19 @@ function Game:new(characterID)
     -- Enemies
     self.enemies = {}
 
-    -- Items
-    self.items = {}
-
     -- Projectiles
     self.projectiles = {}
+
+    -- Interactables
+    self.items = {}
+    self.chests = {}
 
     -- Level
     self.world = WF.newWorld(0, 0)
     self.world:addCollisionClass('Enemy')
     self.world:addCollisionClass('Player')
     self.world:addCollisionClass('Crate')
+    self.world:addCollisionClass('Chest')
     self.world:addCollisionClass('Wall')
     self.world:addCollisionClass('Weapon', { ignores = { 'Weapon', 'Player' } })
     self.world:addCollisionClass('Projectile', { ignores = { 'Weapon', 'Player' } })
@@ -41,6 +43,25 @@ function Game:new(characterID)
 
     -- State
     self.state = 'running'
+end
+
+function Game:addChest(obj)
+    table.insert(self.chests, obj)
+end
+
+function Game:removeChest(obj)
+    for i, chest in ipairs(self.chests) do
+        if chest == obj then
+            table.remove(self.chests, i)
+            break
+        end
+    end
+end
+
+function Game:updateChests(dt)
+    for _, chest in pairs(self.chests) do
+        chest:update(dt)
+    end
 end
 
 function Game:addProjectile(collider, image, scale, angle)
@@ -100,21 +121,30 @@ function Game:drawEnemiesUI()
     end
 end
 
-function Game:closestItem()
+function Game:getClosestInteractable()
     -- Returns the id of the closest item to the player
-    local closestItem = nil
+    local closestInteractable = nil
     local closestDistance = math.huge
 
     for _, item in pairs(self.items) do
         local distance = item.position:dist(self.player.position)
 
         if distance < closestDistance then
-            closestItem = item
+            closestInteractable = item
             closestDistance = distance
         end
     end
 
-    return closestItem
+    for _, chest in pairs(self.chests) do
+        local distance = chest.position:dist(self.player.position)
+
+        if distance < closestDistance then
+            closestInteractable = chest
+            closestDistance = distance
+        end
+    end
+
+    return closestInteractable
 end
 
 function Game:removeItem(item)
@@ -165,6 +195,7 @@ function Game:update(dt)
     self.world:update(dt)
     self:updateItems(dt)
     self:updateEnemies(dt)
+    self:updateChests(dt)
     self:updateEndscreen(dt)
 
     Timer.update(dt)
@@ -190,8 +221,8 @@ function Game:drawEndscreen()
         color = { 1, 0.3, 0.2, 1 }
     end
 
-    local text = love.graphics.newText(Fonts.big4, str)
-    local timer = love.graphics.newText(Fonts.big, self.level:getTimer())
+    local text = love.graphics.newText(Fonts.big3, str)
+    local timer = love.graphics.newText(Fonts.medium, self.level:getTimer())
 
     love.graphics.setColor(color)
     love.graphics.draw(text, love.graphics.getWidth() / 2 - text:getWidth() / 2,
@@ -200,7 +231,7 @@ function Game:drawEndscreen()
     love.graphics.draw(timer, love.graphics.getWidth() / 2 - timer:getWidth() / 2,
         love.graphics.getHeight() / 2 - timer:getHeight() / 2 + 40)
 
-    local hint = love.graphics.newText(Fonts.medium2, 'Press SPACE to go back to the menu')
+    local hint = love.graphics.newText(Fonts.small2, 'Press SPACE to go back to the menu')
     love.graphics.draw(hint, love.graphics.getWidth() / 2 - hint:getWidth() / 2,
         love.graphics.getHeight() - hint:getHeight() / 2 - 50)
 end

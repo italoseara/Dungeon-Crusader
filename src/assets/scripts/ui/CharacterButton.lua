@@ -9,7 +9,7 @@ function CharacterButton:new(id, label, x, y, callback)
 
     -- Text
     self.color = { 1, 1, 1, 1 }
-    self.text = love.graphics.newText(Fonts.big, label)
+    self.text = love.graphics.newText(Fonts.medium, label)
 
     -- Animation
     self.scale = 4

@@ -18,7 +18,7 @@ local CharacterStats = {
     wizard_m = {
         weapon = RedMagicStaff,
         maxHealth = 100,
-        maxMana = 200,
+        maxMana = 250,
         speed = 800,
     },
     lizard_m = {
@@ -42,7 +42,7 @@ local CharacterStats = {
     wizard_f = {
         weapon = RedMagicStaff,
         maxHealth = 100,
-        maxMana = 200,
+        maxMana = 250,
         speed = 800,
     },
     lizard_f = {

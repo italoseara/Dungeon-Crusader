@@ -20,15 +20,15 @@ function love.load()
     }
 
     Fonts     = {
-        medium  = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 16),
-        medium2 = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 24),
-        big     = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 32),
-        big2    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 64),
-        big3    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 84),
-        big4    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 96),
+        small  = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 16),
+        small2 = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 24),
+        medium = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 32),
+        big    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 64),
+        big2   = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 84),
+        big3   = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 96),
     }
 
-    GameState = CharacterSelection()
+    GameState = StartScreen()
 
     Cursor    = CustomCursor(2)
     Mouse     = Vector(0, 0)

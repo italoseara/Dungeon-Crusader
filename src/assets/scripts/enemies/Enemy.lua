@@ -166,6 +166,7 @@ end
 function Enemy:takeDamage(damage, angle, knockback)
     if love.timer.getTime() - self.lastHit < self.hitDelay then return end
 
+    self.sawPlayer = true
     self.lastHit = love.timer.getTime()
     self.health = self.health - damage
     self.velocity = self.velocity + Vector(math.cos(angle), math.sin(angle)) * knockback
@@ -228,7 +229,7 @@ function Enemy:drawBody()
         self.currentAnimation.image,
         self.position.x, self.position.y,
         rotation, self.walkingDirection * 0.9, 0.9,
-        self.width / 2 + 3,self.height)
+        self.width / 2 + 3, self.height)
 end
 
 function Enemy:drawHit()

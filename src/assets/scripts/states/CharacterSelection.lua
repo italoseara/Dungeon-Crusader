@@ -77,7 +77,7 @@ function CharacterSelection:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- Draw the logo above the buttons
-    local text = love.graphics.newText(Fonts.big3, 'Select your character')
+    local text = love.graphics.newText(Fonts.big2, 'Select your character')
     love.graphics.draw(text,
         love.graphics.getWidth() / 2 - text:getWidth() / 2,
         love.graphics.getHeight() / 2 - text:getHeight() / 2 - 200)

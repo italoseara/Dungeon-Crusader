@@ -3,8 +3,10 @@ local Vector = require 'libs.vector'
 local STI = require 'libs.sti'
 local Anim8 = require 'libs.anim8'
 
+-- Interactables
 local Crate = require 'assets.scripts.interactables.Crate'
 local Door = require 'assets.scripts.interactables.Door'
+local Chest = require 'assets.scripts.interactables.Chest'
 
 -- Enemies
 local Plague = require 'assets.scripts.enemies.Plague'
@@ -28,8 +30,7 @@ function Level:new(game, id)
     -- Set spawn
     self.spawn = Vector(0, 0)
     self.spawn.x, self.spawn.y = self.map:convertTileToPixel(18, 31)
-    self.spawn.x = self.spawn.x + 8
-    self.spawn.y = self.spawn.y + 8
+    self.spawn = self.spawn + Vector(8, 8)
 
     -- Create walls
     self.game = game
@@ -117,6 +118,10 @@ function Level:loadInteractables()
         elseif obj.name == 'crate' then
             local x, y = obj.x, obj.y
             interactable = Crate(x, y, self.game, self)
+        elseif obj.name == 'chest' then
+            local x, y = obj.x, obj.y
+            interactable = Chest(x + 8, y + 8, self.game)
+            self.game:addChest(interactable)
         end
 
         table.insert(self.interactables, interactable)
@@ -155,11 +160,11 @@ end
 
 function Level:draw()
     self.map:drawLayer(self.map.layers['Floor'])
+    self:drawInteractables()
     self.map:drawLayer(self.map.layers['Walls'])
     self.map:drawLayer(self.map.layers['Decoration'])
 
     self:drawAnimations()
-    self:drawInteractables()
 end
 
 function Level:drawFog()
@@ -181,7 +186,7 @@ end
 
 function Level:drawTimer()
     local time = self:getTimer()
-    local text = love.graphics.newText(Fonts.big, time)
+    local text = love.graphics.newText(Fonts.medium, time)
 
     local x = love.graphics.getWidth() / 2 - text:getWidth() / 2
     local y = 10
