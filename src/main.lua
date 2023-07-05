@@ -14,24 +14,34 @@ function love.load()
 
     debug     = false
 
+    Sounds    = {
+        MenuSoundtrack = love.audio.newSource('assets/sounds/MenuSoundtrack.mp3', 'stream'),
+        GameSoundtrack = love.audio.newSource('assets/sounds/GameSoundtrack.mp3', 'stream'),
+    }
+
     Shaders   = {
-        fog    = love.graphics.newShader('assets/shaders/fog.glsl'),
-        damage = love.graphics.newShader('assets/shaders/damage.glsl'),
+        Fog    = love.graphics.newShader('assets/shaders/fog.glsl'),
+        Damage = love.graphics.newShader('assets/shaders/damage.glsl'),
     }
 
     Fonts     = {
-        small  = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 16),
-        small2 = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 24),
-        medium = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 32),
-        big    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 64),
-        big2   = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 84),
-        big3   = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 96),
+        Small  = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 16),
+        Small2 = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 24),
+        Medium = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 32),
+        Big    = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 64),
+        Big2   = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 84),
+        Big3   = love.graphics.newFont('assets/fonts/ThaleahFat.ttf', 96),
     }
 
     GameState = StartScreen()
 
     Cursor    = CustomCursor(2)
     Mouse     = Vector(0, 0)
+
+    Sounds.MenuSoundtrack:setLooping(true)
+    Sounds.GameSoundtrack:setLooping(true)
+    Sounds.MenuSoundtrack:setVolume(0)
+    Sounds.GameSoundtrack:setVolume(0)
 end
 
 function love.update(dt)

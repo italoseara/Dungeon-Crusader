@@ -14,6 +14,7 @@ local Ogre = require 'assets.scripts.enemies.Ogre'
 local Imp = require 'assets.scripts.enemies.Imp'
 local BigDemon = require 'assets.scripts.enemies.BigDemon'
 local OrcWarrior = require 'assets.scripts.enemies.OrcWarrior'
+local Chort = require 'assets.scripts.enemies.Chort'
 
 local Level = Class:extend()
 
@@ -94,6 +95,8 @@ function Level:spawnEnemies()
             self.game:spawnEnemy(BigDemon, obj.x + 8, obj.y + 8)
         elseif obj.name == 'orc_warrior' then
             self.game:spawnEnemy(OrcWarrior, obj.x + 8, obj.y + 8)
+        elseif obj.name == 'chort' then
+            self.game:spawnEnemy(Chort, obj.x + 8, obj.y + 8)
         end
     end
 end
@@ -173,6 +176,7 @@ end
 function Level:draw()
     self.map:drawLayer(self.map.layers['Floor'])
     self:drawInteractables()
+    self.map:drawLayer(self.map.layers['Decoration2'])
     self.map:drawLayer(self.map.layers['Walls'])
     self.map:drawLayer(self.map.layers['Decoration'])
 
@@ -180,8 +184,8 @@ function Level:draw()
 end
 
 function Level:drawFog()
-    love.graphics.setShader(Shaders.fog)
-    Shaders.fog:send('radius', 700)
+    love.graphics.setShader(Shaders.Fog)
+    Shaders.Fog:send('radius', 700)
     love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setShader()
 end
@@ -198,7 +202,7 @@ end
 
 function Level:drawTimer()
     local time = self:getTimer()
-    local text = love.graphics.newText(Fonts.medium, time)
+    local text = love.graphics.newText(Fonts.Medium, time)
 
     local x = love.graphics.getWidth() / 2 - text:getWidth() / 2
     local y = 10

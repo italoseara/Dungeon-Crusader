@@ -6,7 +6,7 @@ local DamageIndicator = Class:extend()
 
 function DamageIndicator:new(damage, entity, color)
     if damage > 0 then damage = '+' .. damage end
-    self.text = love.graphics.newText(Fonts.small2, damage)
+    self.text = love.graphics.newText(Fonts.Small2, damage)
 
     self.color = color or { 1, 0, 0, 1 }
 

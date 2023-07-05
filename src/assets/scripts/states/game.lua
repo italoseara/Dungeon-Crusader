@@ -11,7 +11,11 @@ local Item = require 'assets.scripts.Item'
 local Game = Class:extend()
 
 function Game:new(characterID, levelID)
-    -- Camer
+    -- Soundtrack
+    Sounds.MenuSoundtrack:stop()
+    Sounds.GameSoundtrack:play()
+
+    -- Camera
     self.camera = Camera(0, 0, 4)
     self.camera.smoother = Camera.smooth.damped(10)
 
@@ -111,18 +115,6 @@ function Game:updateEnemies(dt)
     if #self.enemies == 0 then self.state = 'win' end
 end
 
-function Game:drawEnemies()
-    for _, enemy in pairs(self.enemies) do
-        enemy:draw()
-    end
-end
-
-function Game:drawEnemiesUI()
-    for _, enemy in pairs(self.enemies) do
-        enemy:drawUI()
-    end
-end
-
 function Game:getClosestInteractable()
     -- Returns the id of the closest item to the player
     local closestInteractable = nil
@@ -182,6 +174,7 @@ function Game:updateEndscreen(dt)
                 self:saveTime(self.level:getTimer())
             end
 
+            Sounds.GameSoundtrack:stop()
             GameState = require 'assets.scripts.states.Menu' ()
         end
     end
@@ -203,10 +196,44 @@ function Game:update(dt)
     Timer.update(dt)
 end
 
+function Game:drawEnemies()
+    for _, enemy in pairs(self.enemies) do
+        enemy:draw()
+    end
+end
+
+function Game:drawEnemiesUI()
+    for _, enemy in pairs(self.enemies) do
+        enemy:drawUI()
+    end
+end
+
 function Game:drawItems()
     for _, item in pairs(self.items) do
         item:draw()
     end
+end
+
+function Game:checkForBestTime(time)
+    local min, sec, milisec = time:match('(%d+):(%d+):(%d+)')
+    local time = tonumber(min) * 60 + tonumber(sec) + tonumber(milisec) / 100
+
+    local file = io.open('data/level' .. self.level.id .. '.dat', 'r')
+    if not file then return end
+
+    local bestTime = math.huge
+    for line in file:lines() do
+        local min, sec, milisec = line:match('(%d+):(%d+):(%d+)')
+        local time = tonumber(min) * 60 + tonumber(sec) + tonumber(milisec) / 100
+
+        if time < bestTime then
+            bestTime = time
+        end
+    end
+
+    file:close()
+
+    return time < bestTime
 end
 
 function Game:drawEndscreen()
@@ -223,8 +250,10 @@ function Game:drawEndscreen()
         color = { 1, 0.3, 0.2, 1 }
     end
 
-    local text = love.graphics.newText(Fonts.big3, str)
-    local timer = love.graphics.newText(Fonts.medium, self.level:getTimer())
+    local text = love.graphics.newText(Fonts.Big3, str)
+    local bestTime = love.graphics.newText(Fonts.Small2, 'New best time!')
+    local currentTime = self.level:getTimer()
+    local timer = love.graphics.newText(Fonts.Medium, currentTime)
 
     love.graphics.setColor(color)
     love.graphics.draw(text, love.graphics.getWidth() / 2 - text:getWidth() / 2,
@@ -233,9 +262,16 @@ function Game:drawEndscreen()
     love.graphics.draw(timer, love.graphics.getWidth() / 2 - timer:getWidth() / 2,
         love.graphics.getHeight() / 2 - timer:getHeight() / 2 + 40)
 
-    local hint = love.graphics.newText(Fonts.small2, 'Press SPACE to go back to the menu')
+    local hint = love.graphics.newText(Fonts.Small2, 'Press SPACE to go back to the menu')
     love.graphics.draw(hint, love.graphics.getWidth() / 2 - hint:getWidth() / 2,
         love.graphics.getHeight() - hint:getHeight() / 2 - 50)
+
+    if self:checkForBestTime(currentTime) and self.state == 'win' then
+        love.graphics.setColor(1, 1, 0.4, 1)
+        love.graphics.draw(bestTime, love.graphics.getWidth() / 2 - bestTime:getWidth() / 2,
+            love.graphics.getHeight() / 2 - bestTime:getHeight() / 2 + 80)
+        love.graphics.setColor(1, 1, 1, 1)
+    end
 end
 
 function Game:draw()

@@ -235,7 +235,7 @@ end
 function Enemy:drawHit()
     if love.timer.getTime() - self.lastHit < 0.1 then
         love.graphics.setColor(1, 0, 0, 0.3)
-        love.graphics.setShader(Shaders.damage)
+        love.graphics.setShader(Shaders.Damage)
         self:drawBody()
         love.graphics.setColor(1, 1, 1)
         love.graphics.setShader()

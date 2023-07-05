@@ -17,7 +17,7 @@ function StartScreen:new()
         transition = 1
     }
 
-    self.text  = love.graphics.newText(Fonts.small, 'Made by Italo Seara')
+    self.text  = love.graphics.newText(Fonts.Small, 'Made by Italo Seara')
 
     love.graphics.setBackgroundColor(0, 0, 0)
 end

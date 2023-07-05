@@ -30,7 +30,8 @@ function LevelSelection:new()
     end
 
     self.cards = {
-        LevelButton(1, center.x, center.y, callback),
+        LevelButton(1, center.x - 320, center.y, callback),
+        LevelButton(2, center.x, center.y, callback),
     }
 end
 
@@ -68,7 +69,7 @@ function LevelSelection:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- Draw the logo above the buttons
-    local text = love.graphics.newText(Fonts.big2, 'Select the level')
+    local text = love.graphics.newText(Fonts.Big2, 'Select the level')
     love.graphics.draw(text,
         love.graphics.getWidth() / 2 - text:getWidth() / 2,
         love.graphics.getHeight() / 2 - text:getHeight() / 2 - 200)

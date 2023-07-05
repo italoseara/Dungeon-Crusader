@@ -12,18 +12,18 @@ function CharacterButton:new(id, x, y, callback)
 
     -- Text
     self.color = { 1, 1, 1, 1 }
-    self.text = love.graphics.newText(Fonts.medium, 'Level ' .. id)
+    self.text = love.graphics.newText(Fonts.Medium, 'Level ' .. id)
+
+    -- Dimentions
+    self.dimentions = Vector(230, 230)
 
     -- Level
-    self.scale = 0.3
     self.image = love.graphics.newImage('assets/maps/previews/level' .. id .. '.png')
 
-    -- Position
-    self.dimentions = Vector(
-        math.max(self.text:getWidth(), self.image:getWidth() * self.scale),
-        (self.text:getHeight() + self.image:getHeight() * self.scale + self.margin)
-    )
+    -- Scale
+    self.scale = math.min(self.dimentions.x / self.image:getWidth(), self.dimentions.y / self.image:getHeight())
 
+    -- Position
     self.position = Vector(x - self.dimentions.x / 2, y - self.dimentions.y / 2)
 
     -- Callback

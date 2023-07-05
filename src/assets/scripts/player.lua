@@ -304,7 +304,7 @@ end
 function Player:drawHit()
     if love.timer.getTime() - self.lastHit < 0.1 then
         love.graphics.setColor(1, 0, 0, 0.3)
-        love.graphics.setShader(Shaders.damage)
+        love.graphics.setShader(Shaders.Damage)
         self:drawBody()
         love.graphics.setColor(1, 1, 1)
         love.graphics.setShader()
@@ -322,7 +322,7 @@ function Player:drawHealth()
         10, love.graphics.getHeight() - self.images.heart:getHeight() * 2 - 15,
         0, 2, 2)
 
-    local text = love.graphics.newText(Fonts.medium, tostring(self.health))
+    local text = love.graphics.newText(Fonts.Medium, tostring(self.health))
     love.graphics.draw(text, 45, love.graphics.getHeight() - text:getHeight() - 10)
 end
 
@@ -331,7 +331,7 @@ function Player:drawMana()
         100, love.graphics.getHeight() - self.images.mana:getHeight() * 2 - 15,
         0, 2, 2)
 
-    local text = love.graphics.newText(Fonts.medium, tostring(self.mana))
+    local text = love.graphics.newText(Fonts.Medium, tostring(self.mana))
     love.graphics.draw(text, 135, love.graphics.getHeight() - text:getHeight() - 10)
 end
 

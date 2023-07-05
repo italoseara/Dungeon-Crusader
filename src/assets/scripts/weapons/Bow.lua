@@ -7,7 +7,7 @@ local Bow = Weapon:extend()
 function Bow:new(game)
     -- Stats
     self.attackRadius = 4
-    self.attackDamage = 15
+    self.attackDamage = 200
     self.attackSpeed = 0.75
     self.attackKnockback = 50
     self.projectileSpeed = 300
