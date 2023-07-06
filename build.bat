@@ -29,6 +29,4 @@ for %%f in (%lovepath%\*.dll) do (
 
 del game.love
 
-cls
-
 exit /b 0

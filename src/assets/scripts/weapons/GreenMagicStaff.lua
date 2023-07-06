@@ -46,4 +46,16 @@ function GreenMagicStaff:onAttack(angle)
     self.game:addProjectile(collider, self.projectile, 0.4)
 end
 
+function GreenMagicStaff:draw(player)
+    love.graphics.draw(
+        self.image,
+        player.position.x,
+        player.position.y + 4,
+        player:getWeaponAngle() + math.rad(90),
+        player.mouseDirection * 0.8, 0.8,
+        self.image:getWidth() / 2,
+        self.image:getHeight() / 2 + 5
+    )
+end
+
 return GreenMagicStaff

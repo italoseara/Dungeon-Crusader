@@ -40,8 +40,8 @@ function love.load()
 
     Sounds.MenuSoundtrack:setLooping(true)
     Sounds.GameSoundtrack:setLooping(true)
-    Sounds.MenuSoundtrack:setVolume(0.3)
-    Sounds.GameSoundtrack:setVolume(0.3)
+    Sounds.MenuSoundtrack:setVolume(0)
+    Sounds.GameSoundtrack:setVolume(0)
 end
 
 function love.update(dt)

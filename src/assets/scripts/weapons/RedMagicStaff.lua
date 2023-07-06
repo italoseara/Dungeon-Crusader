@@ -1,8 +1,8 @@
 local Weapon = require 'assets.scripts.weapons.Weapon'
 
-local MagicStaff = Weapon:extend()
+local RedMagicStaff = Weapon:extend()
 
-function MagicStaff:new(game)
+function RedMagicStaff:new(game)
     -- Stats
     self.attackRadius = 4
     self.attackDamage = 30
@@ -15,10 +15,10 @@ function MagicStaff:new(game)
     self.path = 'assets/images/weapons/weapon_red_magic_staff.png'
     self.projectile = love.graphics.newImage('assets/images/weapons/weapon_spell.png')
 
-    MagicStaff.super.new(self, game)
+    RedMagicStaff.super.new(self, game)
 end
 
-function MagicStaff:onAttack(angle)
+function RedMagicStaff:onAttack(angle)
     -- Spend mana
     if not self.game.player:spendMana(self.manaCost) then return end
 
@@ -46,4 +46,16 @@ function MagicStaff:onAttack(angle)
     self.game:addProjectile(collider, self.projectile, 0.4)
 end
 
-return MagicStaff
+function RedMagicStaff:draw(player)
+    love.graphics.draw(
+        self.image,
+        player.position.x,
+        player.position.y + 4,
+        player:getWeaponAngle() + math.rad(90),
+        player.mouseDirection * 0.8, 0.8,
+        self.image:getWidth() / 2,
+        self.image:getHeight() / 2 + 5
+    )
+end
+
+return RedMagicStaff
