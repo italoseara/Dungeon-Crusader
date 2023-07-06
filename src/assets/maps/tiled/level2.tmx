@@ -411,7 +411,7 @@
   <object id="721" name="chest" x="752" y="416" width="16" height="16"/>
   <object id="723" name="door" x="688" y="332" width="32" height="5"/>
  </objectgroup>
- <objectgroup id="11" name="Enemies" visible="0">
+ <objectgroup id="11" name="Enemies">
   <object id="367" name="plague" x="144" y="416" width="16" height="16"/>
   <object id="368" name="plague" x="368" y="400" width="16" height="16"/>
   <object id="369" name="plague" x="96" y="384" width="16" height="16"/>
@@ -440,16 +440,16 @@
   <object id="399" name="imp" x="784" y="208" width="16" height="16"/>
   <object id="400" name="big_demon" x="832" y="256" width="16" height="16"/>
  </objectgroup>
- <objectgroup id="13" name="Spawn" visible="0">
+ <objectgroup id="13" name="Spawn">
   <object id="401" name="spawn" x="96" y="592" width="16" height="16"/>
  </objectgroup>
- <objectgroup id="10" name="Animation" visible="0">
+ <objectgroup id="10" name="Animation">
   <object id="205" name="fountain_red" type="fountain" x="512" y="17" width="16" height="22"/>
   <object id="206" name="fountain_blue" type="fountain" x="752" y="17" width="16" height="22"/>
   <object id="210" name="fountain_blue" type="fountain" x="784" y="17" width="16" height="22"/>
   <object id="211" name="fountain_red" type="fountain" x="496" y="225" width="16" height="22"/>
  </objectgroup>
- <objectgroup id="9" name="Collide" visible="0">
+ <objectgroup id="9" name="Collide">
   <object id="19" x="64" y="652" width="96" height="5"/>
   <object id="21" x="155" y="636" width="5" height="16"/>
   <object id="22" x="160" y="636" width="32" height="5"/>
@@ -588,7 +588,7 @@
   <object id="414" x="82" y="212" width="12" height="22"/>
   <object id="415" x="146" y="212" width="12" height="22"/>
  </objectgroup>
- <objectgroup id="8" name="Void" visible="0">
+ <objectgroup id="8" name="Void">
   <object id="2" x="576" y="96" width="16" height="32"/>
   <object id="3" x="592" y="112" width="16" height="16"/>
   <object id="4" x="640" y="96" width="16" height="32"/>

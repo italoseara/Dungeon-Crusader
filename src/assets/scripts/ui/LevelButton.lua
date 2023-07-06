@@ -82,6 +82,7 @@ function CharacterButton:draw()
         self.position.y - self.padding,
         self.dimentions.x + self.padding * 2,
         self.dimentions.y + self.padding * 2)
+    love.graphics.setLineWidth(0.5)
     love.graphics.setColor(1, 1, 1, 1)
 end
 

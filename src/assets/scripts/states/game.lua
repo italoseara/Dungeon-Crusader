@@ -175,7 +175,7 @@ function Game:updateEndscreen(dt)
             end
 
             Sounds.GameSoundtrack:stop()
-            GameState = require 'assets.scripts.states.Menu' ()
+            GameState = require 'assets.scripts.states.LevelSelection' ()
         end
     end
 end

@@ -32,6 +32,7 @@ function LevelSelection:new()
     self.cards = {
         LevelButton(1, center.x - 320, center.y, callback),
         LevelButton(2, center.x, center.y, callback),
+        LevelButton(3, center.x + 320, center.y, callback),
     }
 end
 
